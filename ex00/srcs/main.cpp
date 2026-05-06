@@ -1,0 +1,27 @@
+#include "BitcoinExchange.hpp"
+
+void basic_process(BitcoinExchange &btc_program, const std::string &file_name)
+{
+    btc_program.setFileName(file_name);
+    try
+    {
+        btc_program.parseInputFile();
+    }
+    catch(const std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
+    }    
+}
+
+int main(int argc, char **argv)
+{
+    BitcoinExchange btc_program;
+    if (argc < 2 || argc > 2)
+    {
+        std::cout << "execute the program this way : " << std::endl
+        << "./btc <input_file>";
+        return (1);
+    }
+    basic_process(btc_program, argv[1]);
+    return (0);
+}
