@@ -24,8 +24,11 @@ class BitcoinExchange {
         std::string getFileName();
 
         // member functions
+        void parseDataFile();
         void parseInputFile();
         void insertDataValue(const std::string &s1, const std::string &s2);
+        void printDbValues();
+        std::string calculTheExchange(const std::string &s1, const std::string &s2);
 
         // exceptions
         class NoFileException : public std::exception {

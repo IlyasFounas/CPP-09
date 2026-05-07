@@ -5,7 +5,9 @@ void basic_process(BitcoinExchange &btc_program, const std::string &file_name)
     btc_program.setFileName(file_name);
     try
     {
+        btc_program.parseDataFile();
         btc_program.parseInputFile();
+        // btc_program.printDbValues();
     }
     catch(const std::exception& e)
     {
