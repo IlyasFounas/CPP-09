@@ -20,15 +20,20 @@ class BitcoinExchange {
         BitcoinExchange &operator=(const BitcoinExchange &cpy);
         ~BitcoinExchange();
 
+        // setters
         void setFileName(const std::string &file_name);
+        
+        // getters
         std::string getFileName();
 
         // member functions
-        void parseDataFile();
-        void parseInputFile();
-        void insertDataValue(const std::string &s1, const std::string &s2);
-        void printDbValues();
-        std::string calculTheExchange(const std::string &s1, const std::string &s2);
+        void        parseDataFile();
+        void        parseInputFile();
+        void        insertDataValue(const std::string &s1, const std::string &s2);
+        void        printDbValues();
+        std::string calculTheExchange(const std::string &s1, const std::string &s2,
+            std::string &error_message);
+        int         ft_atoi(const std::string &s, int &err);
 
         // exceptions
         class NoFileException : public std::exception {
@@ -37,6 +42,11 @@ class BitcoinExchange {
         } ;
 
         class BadInputException : public std::exception {
+            public:
+				virtual const char *what() const throw();
+        } ;
+
+        class BadInputFirstLineException : public std::exception {
             public:
 				virtual const char *what() const throw();
         } ;

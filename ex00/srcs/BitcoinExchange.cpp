@@ -21,11 +21,13 @@ BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &cpy)
 
 BitcoinExchange::~BitcoinExchange() {}
 
+//setters
 void BitcoinExchange::setFileName(const std::string &file_name)
 {
     this->_file_name = file_name;
 }
 
+// getters
 std::string BitcoinExchange::getFileName()
 {
     return (this->_file_name);
@@ -72,6 +74,8 @@ void BitcoinExchange::parseInputFile()
     std::ifstream read_file;
     std::string line;
     std::string file_name = getFileName();
+    std::string s1 = "";
+    std::string s2 = "";
     size_t pos;
     int i = 0;
     
@@ -86,12 +90,28 @@ void BitcoinExchange::parseInputFile()
             insertDataValue(line, "NULL");
             std::cout << "Error: bad input => " << line << std::endl;
         }
+        else
+        {
+            s1 = line.substr(0, pos);
+            s2 = line.substr(pos + 3);
+        }
+        if (i == 0)
+        {
+            if (pos == std::string::npos || (s1 != "date" || s2 != "value"))
+                throw BadInputFirstLineException();
+        }
         else if (i != 0)
         {
-            std::string s1 = line.substr(0, pos);
-            std::string s2 = line.substr(pos + 3);
-            std::cout << s1 << " => " << s2 
-            << " = " << calculTheExchange(s1, s2) << std::endl;
+            std::string error_message;
+            std::string printExchange = calculTheExchange(s1, s2, error_message);
+
+            if (printExchange == "error" || printExchange == "overflow")
+                std::cout << error_message << std::endl;
+            else
+            {
+                std::cout << s1 << " => " << s2 
+                << " = " << printExchange << std::endl;
+            }
         }
         i++;
     }
@@ -111,21 +131,55 @@ void BitcoinExchange::printDbValues()
     }
 }
 
-std::string BitcoinExchange::calculTheExchange(const std::string &s1, const std::string &s2)
+std::string BitcoinExchange::calculTheExchange(const std::string &s1, const std::string &s2,
+    std::string &error_message)
 {
     (void)s1;
-    (void)s2;
+    int err = 0;
+    long int nb = ft_atoi(s2, err);
+    if (err == 1)
+    {
+        error_message = "Error: there is no input";
+        return ("error");
+    }
+    if (nb > 2147483647)
+    {
+        error_message = "Error: too large number";
+        return ("overflow");
+    }
+    else if (nb < -2147483648)
+    {
+        error_message = "Error: too low number";
+        return ("overflow");
+    }
     return ("NULL");
 }
 
 
+int BitcoinExchange::ft_atoi(const std::string &s, int &err)
+{
+    int i = 0;
+
+    if (s.empty())
+    {
+        err = 1;
+        return (-1);
+    }
+    return (i);
+}
+
 // exceptions
 const char *BitcoinExchange::NoFileException::what() const throw()
 {
-    return "There's no input file";
+    return "Error: There's no input file";
 }
 
 const char *BitcoinExchange::BadInputException::what() const throw()
 {
     return "Error: bad input in the data csv";
+}
+
+const char *BitcoinExchange::BadInputFirstLineException::what() const throw()
+{
+    return "Error: the first line does not respect the right format";
 }
