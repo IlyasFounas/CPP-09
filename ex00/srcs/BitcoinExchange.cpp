@@ -131,41 +131,117 @@ void BitcoinExchange::printDbValues()
     }
 }
 
+bool BitcoinExchange::checkRequirements(long int year, long int month, long int day, std::string &error_message, int &err)
+{
+    if (year < 2009 || year > 2026)
+    {
+        error_message = "Error: no available data at this date"; 
+        err = 1;
+        return (false);
+    }
+    if (month < 1 || month > 12)
+    {
+        error_message = "Error: no available data at this date";
+        err = 1;
+        return (false);
+    }
+    if (day < 1 || day > 31)
+    {
+        error_message = "Error: no available data at this date";
+        err = 1;
+        return (false);
+    }
+    return (true);
+}
+
+/**
+ * @brief This function return the value of the closer input date in the csv database
+ */
+long int BitcoinExchange::returnDataValue(const std::string &input_date, int &err, std::string &error_message)
+{
+    long int year = 0;
+    long int month = 0;
+    long int day = 0;
+    size_t pos = input_date.find("-");
+    size_t last_pos = input_date.find("-", pos + 1);
+
+    if (pos == std::string::npos || last_pos == std::string::npos)
+    {
+        error_message = "Error: invalid date format (expected yyyy-mm-dd)";
+        err = 1;
+        return (0);
+    }
+    year = ft_atoi(input_date.substr(0, pos), err, error_message);
+    if (err == 1)
+        return (-1);
+    month = ft_atoi(input_date.substr(pos + 1, last_pos - (pos + 1)), err, error_message);
+    if (err == 1)
+        return (-1);
+    day = ft_atoi(input_date.substr(last_pos + 1), err, error_message);
+    if (err == 1)
+        return (-1);
+    // check the requirements
+    if (!checkRequirements(year, month, day, error_message, err))
+        return (0);
+    return (1);
+}
+
 std::string BitcoinExchange::calculTheExchange(const std::string &s1, const std::string &s2,
     std::string &error_message)
 {
-    (void)s1;
     int err = 0;
-    long int nb = ft_atoi(s2, err);
+    long int nb = ft_atoi(s2, err, error_message);
     if (err == 1)
-    {
-        error_message = "Error: there is no input";
         return ("error");
-    }
-    if (nb > 2147483647)
-    {
-        error_message = "Error: too large number";
+    if (nb > 2147483647 || nb < -2147483648)
         return ("overflow");
-    }
-    else if (nb < -2147483648)
-    {
-        error_message = "Error: too low number";
-        return ("overflow");
-    }
+    long int data_value = returnDataValue(s1, err, error_message);
+    if (err == 1)
+        return ("error");
+    std::cout << "after " << nb * data_value << std::endl;
     return ("NULL");
 }
 
 
-int BitcoinExchange::ft_atoi(const std::string &s, int &err)
+long int BitcoinExchange::ft_atoi(const std::string &s, int &err, std::string &error_message)
 {
-    int i = 0;
+    size_t i = 0;
+    long int res = 0;
+    int negatif = 1;
 
     if (s.empty())
     {
         err = 1;
+        error_message = "Error: there is no input.";
         return (-1);
     }
-    return (i);
+    while ((s[i] >= 9 && s[i] <= 13) || s[i] == 32)
+        i++;
+    if (s[i] == '-' || s[i] == '+')
+    {
+        if (s[i] == '-')
+            negatif = -1;
+        i++;
+    }
+    while (s[i] >= '0' && s[i] <= '9')
+    {
+        res = (res * 10) + (s[i] - 48);
+        if (res > INT_MAX || res < INT_MIN)
+        {
+            if (res * negatif > 2147483647)
+                error_message = "Error: too large number.";
+            else
+                error_message = "Error: too low number.";    
+            return (res * negatif);
+        }
+        i++;
+    }
+    if (i < s.length())
+    {
+        err = 1;
+        return (-1);
+    }
+    return (res * negatif);
 }
 
 // exceptions

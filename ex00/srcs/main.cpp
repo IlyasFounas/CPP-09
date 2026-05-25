@@ -20,8 +20,7 @@ int main(int argc, char **argv)
     BitcoinExchange btc_program;
     if (argc < 2 || argc > 2)
     {
-        std::cout << "execute the program this way : " << std::endl
-        << "./btc <input_file>";
+        std::cout << "Error no file provided." << std::endl;
         return (1);
     }
     basic_process(btc_program, argv[1]);
