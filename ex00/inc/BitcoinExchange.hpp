@@ -15,6 +15,12 @@ class BitcoinExchange {
     private:
         std::string _file_name;
         std::map<std::string, std::string> _internal_db;
+        long int year;
+        long int month;
+        long int day;
+        long int year_csv;
+        long int month_csv;
+        long int day_csv;
 
     public:
         BitcoinExchange();
@@ -33,14 +39,16 @@ class BitcoinExchange {
         void        parseDataFile();
         void        parseInputFile();
         void        insertDataValue(const std::string &s1, const std::string &s2);
-        void        printDbValues();
-        bool BitcoinExchange::checkRequirements(long int year, long int month, long int day,
+        bool        checkRequirements(long int year, long int month, long int day,
             std::string &error_message, int &err);
+        long int    extractDateValue(const std::string &date, int &err, std::string &error_message, bool csv);
         long int    returnDataValue(const std::string &input_date, int &err,
             std::string &error_message);
-        std::string calculTheExchange(const std::string &s1, const std::string &s2,
+        long int calculTheExchange(const std::string &s1, const std::string &s2,
             std::string &error_message);
         long int         ft_atoi(const std::string &s, int &err, std::string &error_message);
+
+
         // exceptions
         class NoFileException : public std::exception {
             public:

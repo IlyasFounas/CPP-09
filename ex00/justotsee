@@ -1,0 +1,18 @@
+2011-01-03 => 3 = 0
+2011-01-03 => 2 = 0
+2011-01-03 => 1 = 0
+2011-01-03 => 1.2 = 0
+2011-01-09 => 1 = 0
+2012-01-11 => -1 = 0
+Error: bad input => 2001-42-42
+2012-01-11 => -1 = 0
+2012-01-11 => 1 = 0
+Error: too large number.
+Error: no available data at this date
+Error: no available data at this date
+Error: no available data at this date
+Error: too low number.
+2008-12- => -214748 = 0
+Error: there is no input.
+Error: invalid date format (expected yyyy-mm-dd)
+Error: invalid date format (expected yyyy-mm-dd)
