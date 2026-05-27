@@ -46,7 +46,7 @@ void BitcoinExchange::parseDataFile()
     std::string s1;
     std::string s2;
 
-    read_file.open("data.csv", std::ios::app);
+    read_file.open("data/data.csv", std::ios::app);
     while (std::getline(read_file, line))
     {
 
@@ -91,6 +91,7 @@ void BitcoinExchange::parseInputFile()
         {
             insertDataValue(line, "NULL");
             std::cout << "Error: bad input => " << line << std::endl;
+            continue ;
         }
         else
         {
@@ -108,7 +109,9 @@ void BitcoinExchange::parseInputFile()
             long int printExchange = calculTheExchange(s1, s2, error_message);
 
             if (!error_message.empty())
+            {
                 std::cout << error_message << std::endl;
+            }
             else
             {
                 std::cout << s1 << " => " << s2 
@@ -194,74 +197,38 @@ long int BitcoinExchange::extractDateValue(const std::string &date, int &err, st
     return (0);
 }
 
+#include <cstdlib>
 /**
  * @brief This function return the value of the closer input date in the csv database
  * year 2021-05-22 et input = 2011-03-06
  * last_year 2009-12-03
  */
-// long int BitcoinExchange::returnDataValue(const std::string &input_date, int &err, std::string &error_message)
-// {
-//     int last_year;
-//     int last_month;
-//     int last_day;
-//     int cyear = -1;
-//     int cmonth = -1;
-//     int cday = -1;
-//     std::map<std::string, std::string>::iterator it = this->_internal_db.begin();
-//     std::map<std::string, std::string>::iterator ite = this->_internal_db.end();
-
-//     if (extractDateValue(input_date, err, error_message, false) == -1)
-//         return (-1);
-//     if (!checkRequirements(this->year, this->month, this->day, error_message, err))
-//         return (0);
-//     while (it != ite)
-//     {
-//         if (extractDateValue(it->first, err, error_message, true) == -1)
-//             return (-1);
-//         if (cyear == -1 && cmonth == -1 && cday == -1)
-//         {
-//             cyear = this->year_csv;
-//             cmonth = this->month_csv;
-//             cday = this->day_csv;
-//         }
-//         else
-//         {
-//             if (last_year - this->year < this->year_csv - year)
-//             cyear = 
-//         }
-//         last_year = this->year_csv;
-//         last_month = this->month_csv;
-//         last_day = this->day_csv;
-//         std::cout << this->year_csv << std::endl;
-//         it++;
-//     }
-//     return (1);
-// }
-#include <cstdlib>  // Pour std::atol et std::abs (pour les entiers)
-
-long int BitcoinExchange::returnDataValue(const std::string &input_date, int &err, std::string &error_message) {
+long double BitcoinExchange::returnDataValue(const std::string &input_date, int &err, std::string &error_message)
+{
+    std::string closest_date;
     // 1. Vérifier que la date est valide
     if (extractDateValue(input_date, err, error_message, false) == -1)
         return -1;
     if (!checkRequirements(this->year, this->month, this->day, error_message, err))
         return -1;
 
-    // 2. Trouver la première date >= input_date
+    // find the exect date in the database
+    if (this->_internal_db.size() <= 0)
+        return (0);
     std::map<std::string, std::string>::iterator it = this->_internal_db.lower_bound(input_date);
-
-    // 3. Gérer les 4 cas possibles
-    std::string closest_date;
-    if (it == this->_internal_db.end()) {
-        // Toutes les dates sont < input_date → prendre la dernière
+    if (it == this->_internal_db.end())
+    {
+        // std::cout << this->_internal_db.size() << std::endl;
         closest_date = this->_internal_db.rbegin()->first;
-    } else if (it == this->_internal_db.begin()) {
-        // Toutes les dates sont > input_date → prendre la première
+    } 
+    else if (it == this->_internal_db.begin())
+    {
         closest_date = it->first;
-    } else {
-        // Comparer avec la date précédente
+    }
+    else
+    {
         std::map<std::string, std::string>::iterator prev_it = it;
         prev_it--;
-
         // Convertir en YYYYMMDD pour comparaison numérique
         long input_num = std::atol(input_date.substr(0, 4).c_str()) * 10000 +
                         std::atol(input_date.substr(5, 2).c_str()) * 100 +
@@ -274,17 +241,13 @@ long int BitcoinExchange::returnDataValue(const std::string &input_date, int &er
         long prev_num = std::atol(prev_it->first.substr(0, 4).c_str()) * 10000 +
                        std::atol(prev_it->first.substr(5, 2).c_str()) * 100 +
                        std::atol(prev_it->first.substr(8, 2).c_str());
-
-        // Choisir la date la plus proche
-        if (std::abs(next_num - input_num) < std::abs(input_num - prev_num)) {
+        if (std::abs(next_num - input_num) < std::abs(input_num - prev_num))
             closest_date = it->first;
-        } else {
+        else
             closest_date = prev_it->first;
-        }
     }
-    std::cout << this->_internal_db[closest_date] << std::endl;
-    // 4. Retourner la valeur associée
-    return ft_atoi(this->_internal_db[closest_date], err, error_message);
+    // return the good value
+    return (std::atol(this->_internal_db[closest_date].c_str()));
 }
 
 long int BitcoinExchange::calculTheExchange(const std::string &s1, const std::string &s2,
@@ -298,13 +261,13 @@ long int BitcoinExchange::calculTheExchange(const std::string &s1, const std::st
         return 0;
     if (nb < 0)
     {
-
+        error_message = "Error: not a positive number.";
         return 0;
     }
-    long int data_value = returnDataValue(s1, err, error_message);
+    long double data_value = returnDataValue(s1, err, error_message);
     if (err == 1)
         return 0;
-    return nb * data_value;
+    return (long double)nb * data_value;
 }
 
 
