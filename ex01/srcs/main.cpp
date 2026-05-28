@@ -8,7 +8,8 @@ int main(int argc, char **argv)
     if (argc != 2)
         return 1;
     calculator.setExpression(argv[1]);
-    calculator.calcul();
+    if (!calculator.calcul())
+        return 1;
     result = calculator.getResult();
     std::cout << "result = " << result << std::endl;
     return 0;
