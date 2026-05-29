@@ -106,7 +106,7 @@ void BitcoinExchange::parseInputFile()
         else if (i != 0)
         {
             std::string error_message;
-            long int printExchange = calculTheExchange(s1, s2, error_message);
+            long double printExchange = calculTheExchange(s1, s2, error_message);
 
             if (!error_message.empty())
             {
@@ -218,7 +218,6 @@ long double BitcoinExchange::returnDataValue(const std::string &input_date, int 
     std::map<std::string, std::string>::iterator it = this->_internal_db.lower_bound(input_date);
     if (it == this->_internal_db.end())
     {
-        // std::cout << this->_internal_db.size() << std::endl;
         closest_date = this->_internal_db.rbegin()->first;
     } 
     else if (it == this->_internal_db.begin())
@@ -247,10 +246,10 @@ long double BitcoinExchange::returnDataValue(const std::string &input_date, int 
             closest_date = prev_it->first;
     }
     // return the good value
-    return (std::atol(this->_internal_db[closest_date].c_str()));
+    return std::strtold(this->_internal_db[closest_date].c_str(), NULL);
 }
 
-long int BitcoinExchange::calculTheExchange(const std::string &s1, const std::string &s2,
+long double BitcoinExchange::calculTheExchange(const std::string &s1, const std::string &s2,
     std::string &error_message)
 {
     int err = 0;

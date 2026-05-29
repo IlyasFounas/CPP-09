@@ -44,7 +44,7 @@ class BitcoinExchange {
         long int    extractDateValue(const std::string &date, int &err, std::string &error_message, bool csv);
         long double    returnDataValue(const std::string &input_date, int &err,
             std::string &error_message);
-        long int calculTheExchange(const std::string &s1, const std::string &s2,
+        long double calculTheExchange(const std::string &s1, const std::string &s2,
             std::string &error_message);
         long int         ft_atoi(const std::string &s, int &err, std::string &error_message);
 
