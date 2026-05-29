@@ -9,7 +9,7 @@ class RPN {
     private:
         std::string _exp;
         long int _result;
-        std::stack<char> i_stack;
+        std::stack<long int> i_stack;
 
     public:
         RPN();
@@ -19,12 +19,10 @@ class RPN {
 
         // member functions
         bool operationCheck(size_t i);
-        bool simpleCheck(std::string &error_message, size_t &i);
         bool expressionCheck(std::string &error_message);
         bool calcul();
 
         // setters
-        void fillStack();
         void setExpression(const std::string &expression);
         void setResult(long int &result);
 
