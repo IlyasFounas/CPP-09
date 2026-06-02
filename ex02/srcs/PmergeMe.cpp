@@ -97,8 +97,11 @@ void PmergeMe::merge()
         std::cout << "Error: you should put at least two numbers" << std::endl;
         return ;
     }
+    std::cout << "Before: " << std::endl;
     printIt(1);
     recursiveMerge(0);
+    std::cout << "After: " << std::endl;
+    printIt(1);
 }
 
 void PmergeMe::printIt(const int &first)
