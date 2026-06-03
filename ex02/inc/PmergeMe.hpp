@@ -18,13 +18,15 @@ class PmergeMe {
         ~PmergeMe();
 
         // member functions
-        void blockSwap(int &pos1, int &pos2);
-        int recursiveMerge(int level);
-        void calculMP(int &level, std::vector<int> &m, std::vector<int> &p);
-        int reverseRecursiveMerge(int level, const int *j_suit);
-        void merge();
-        void printIt(std::vector<int> &print_vec, const int &level);
-        void insert(const std::string &s);
+        void    blockSwap(int &pos1, int &pos2);
+        int     recursiveMerge(int level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &ij, const int *j_suit);
+        void    binarySearch(int &level, std::vector<int> m, std::vector<int> p, 
+                    std::vector<int> ij);
+        void    calculMP(int &level, std::vector<int> &m, std::vector<int> &p);
+        void     reverseMerge(int &level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &ij, const int *j_suit);
+        void    merge();
+        void    printIt(std::vector<int> &print_vec, const int &level);
+        void    insert(const std::string &s);
 } ;
 
 #endif

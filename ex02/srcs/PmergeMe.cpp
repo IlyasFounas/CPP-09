@@ -64,7 +64,7 @@ void PmergeMe::blockSwap(int &pos1, int &pos2)
  * level 1                : | 2 15   3 45 | 89
  * When we can't create more blocks we stop the recursion
  */
-int PmergeMe::recursiveMerge(int level)
+int PmergeMe::recursiveMerge(int level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &ij, const int *j_suit)
 {
     int tmp1 = 0;
     int tmp2 = 0;
@@ -112,8 +112,46 @@ int PmergeMe::recursiveMerge(int level)
     printIt(this->first, level);
     if ((level == 0 && this->first.size() > 2)
         || (double)(this->first.size()) / 2 >= (double)(2 << level))
-        return (recursiveMerge(level + 1));
+        recursiveMerge(level + 1, m, p, ij, j_suit);
+    p.clear();
+    m.clear();
+    ij.clear();
+    reverseMerge(level, m, p, ij, j_suit);
     return (level);
+}
+
+void PmergeMe::binarySearch(int &level, std::vector<int> m, std::vector<int> p,
+    std::vector<int> ij)
+{
+    (void)m;
+    int i;
+    int j = 1;
+    int nb_swap = *std::max_element(ij.begin(), ij.end()); //nb of number to swap
+    int nb_take = (1 << level);
+    if (nb_swap == 1)
+        return ; //don't need to search and sort
+    for (std::vector<int>::iterator itj = ij.begin();
+        itj != ij.end(); itj++)
+    {
+        i = 0;
+        if (*itj != 1)
+        {
+            for (std::vector<int>::iterator it = p.begin();
+                it != p.end(); it++)
+            {
+                if (j == *itj)
+                {
+                    
+                }
+                if (i != 0 && (i + 1) % nb_take == 0)
+                {
+                    j++;
+                    std::cout << "print it " << *it << std::endl;
+                }
+                i++;
+            }
+        }
+    }
 }
 
 void PmergeMe::calculMP(int &level, std::vector<int> &m, std::vector<int> &p)
@@ -157,31 +195,54 @@ void PmergeMe::calculMP(int &level, std::vector<int> &m, std::vector<int> &p)
     }
 }
 
-int PmergeMe::reverseRecursiveMerge(int level, const int *j_suit)
+void PmergeMe::reverseMerge(int &level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &ij, const int *j_suit)
 {
-    std::vector<int> m;
-    std::vector<int> p;
-    std::vector<int> ij;
-
+    int j = 0;
+    int clast_insert = 0;
+    int last_insert = 0;
+    int psize = 0;
+    int i;
+    
     calculMP(level, m, p);
-    std::cout << "level " << level << std::endl;
-    std::cout << "m : ";
+    std::cout << "level " << level << std::endl << "m : ";
     printIt(m, -1);
     std::cout << "p : ";
     printIt(p, -1);
+    // calcul the jacobsthal index
+    psize = (int)p.size() / (1 << level);
+    i = psize;
+    while ((int)ij.size() != psize)
+    {
+        if (i - j_suit[j] <= 0)
+            i -= j_suit[j];
+        if (i < 0)
+            ij.push_back(psize);
+        else
+            ij.push_back(j_suit[j]);
+        last_insert = *--ij.end();
+        clast_insert = *--ij.end();
+        if (j_suit[j] != 1 && (int)ij.size() != psize)
+        {
+            while ((int)ij.size() != clast_insert)
+                ij.push_back(--last_insert);
+        }
+        j++;
+    }
+    std::cout << "ij : ";
+    printIt(ij, -1);
     std::cout << std::endl;
-    (void)ij;
-    // calcul the jacobsthal suit
-    if (level > 0)
-        reverseRecursiveMerge(level - 1, j_suit);
-    return (0);
+    binarySearch(level, m, p, ij);
+    // binary search
 }
 
 void PmergeMe::merge()
 {
-    static const int j_suit[] = {0, 1, 1, 3, 5, 11, 21, 43, 85, 171,
+    static const int j_suit[] = {1, 3, 5, 11, 21, 43, 85, 171,
         341, 683, 1365, 2731, 5461, 10923, 21845, 43691, 87381, 174763, 349525};
     int end_level = 0;
+    std::vector<int> m;
+    std::vector<int> p;
+    std::vector<int> ij;
     if (this->first.size() < 2)
     {
         std::cout << "Error: you should put at least two numbers" << std::endl;
@@ -189,8 +250,7 @@ void PmergeMe::merge()
     }
     std::cout << "Before: " << std::endl;
     printIt(this->first, -1);
-    end_level = recursiveMerge(0);
-    reverseRecursiveMerge(end_level, j_suit);
+    end_level = recursiveMerge(0, m, p, ij, j_suit);
     std::cout << "After: " << std::endl;
     printIt(this->first, -1);
 }
