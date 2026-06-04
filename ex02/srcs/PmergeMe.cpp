@@ -141,7 +141,7 @@ void PmergeMe::binarySearch(int &level, std::vector<int> m, std::vector<int> p,
             {
                 if (j == *itj)
                 {
-                    
+                    m.push_back(*it);
                 }
                 if (i != 0 && (i + 1) % nb_take == 0)
                 {
@@ -150,12 +150,14 @@ void PmergeMe::binarySearch(int &level, std::vector<int> m, std::vector<int> p,
                 }
                 i++;
             }
+            std::cout <<  << std::endl;
         }
     }
 }
 
 void PmergeMe::calculMP(int &level, std::vector<int> &m, std::vector<int> &p)
 {
+    (void)m;
     int j;
     int last_pos2 = 0;
     int pos1 = 0;
@@ -176,8 +178,8 @@ void PmergeMe::calculMP(int &level, std::vector<int> &m, std::vector<int> &p)
                 {
                     if ((j > last_pos2 && j <= pos1))
                         p.push_back(*it);
-                    else if (j > pos1 && j <= pos2)
-                        m.push_back(*it);    
+                    // else if (j > pos1 && j <= pos2)
+                    //     m.push_back(*it);    
                     j++;
                 }
                 last_pos2 = pos2;
@@ -189,8 +191,8 @@ void PmergeMe::calculMP(int &level, std::vector<int> &m, std::vector<int> &p)
         {
             if (i % 2 == 0)
                 p.push_back(this->first.at(i));
-            else
-                m.push_back(this->first.at(i));
+            // else
+            //     m.push_back(this->first.at(i));
         }
     }
 }
@@ -204,9 +206,7 @@ void PmergeMe::reverseMerge(int &level, std::vector<int> &m, std::vector<int> &p
     int i;
     
     calculMP(level, m, p);
-    std::cout << "level " << level << std::endl << "m : ";
-    printIt(m, -1);
-    std::cout << "p : ";
+    std::cout << "level " << level << std::endl << "p : ";
     printIt(p, -1);
     // calcul the jacobsthal index
     psize = (int)p.size() / (1 << level);
