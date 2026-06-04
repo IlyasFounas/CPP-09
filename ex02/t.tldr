@@ -1193,9 +1193,9 @@
 			"typeName": "shape"
 		},
 		{
-			"x": 443.187449603794,
-			"y": 394.9284298650773,
-			"z": 0.5843886997739648,
+			"x": 500.9786340036975,
+			"y": 88.77620408355672,
+			"z": 0.833859061054457,
 			"meta": {},
 			"id": "camera:page:page",
 			"typeName": "camera"
@@ -1823,7 +1823,7 @@
 			"props": {
 				"color": "black",
 				"size": "s",
-				"w": 382.28436279296875,
+				"w": 956.9528465473,
 				"font": "draw",
 				"textAlign": "start",
 				"autoSize": true,
@@ -1842,7 +1842,7 @@
 							"content": [
 								{
 									"type": "text",
-									"text": "final sort = 1 2 3 5 12 13 26 27 30 38 26"
+									"text": "final sort = 1 2 3 5 12 13 26 27 30 38 56"
 								}
 							]
 						}
@@ -2105,9 +2105,12 @@
 			"editingShapeId": null,
 			"croppingShapeId": null,
 			"selectedShapeIds": [
-				"shape:q_lS8zbMSfoAP0ydxVjhl"
+				"shape:oHqHhxqWeEPTSrxCO5AHt",
+				"shape:Al0oyJyl0-grHnCaF7ecD",
+				"shape:6xSac47BJ-bKJldZRi55O",
+				"shape:j2B9z_y3nJK-8yIqPsBwx"
 			],
-			"hoveredShapeId": "shape:19c7bsk3ce8inUIQWPSct",
+			"hoveredShapeId": "shape:j2B9z_y3nJK-8yIqPsBwx",
 			"erasingShapeIds": [],
 			"hintingShapeIds": [],
 			"focusedGroupId": null,
@@ -4399,8 +4402,8 @@
 			"typeName": "shape"
 		},
 		{
-			"x": 365.2031399918475,
-			"y": 119.08573203698222,
+			"x": 367.6235124576291,
+			"y": 114.46625864393337,
 			"rotation": 0,
 			"isLocked": false,
 			"opacity": 1,
@@ -4880,11 +4883,7 @@
 		{
 			"followingUserId": null,
 			"opacityForNextShape": 1,
-			"stylesForNextShape": {
-				"tldraw:dash": "draw",
-				"tldraw:size": "s",
-				"tldraw:color": "black"
-			},
+			"stylesForNextShape": {},
 			"brush": null,
 			"scribbles": [],
 			"cursor": {
@@ -4898,8 +4897,8 @@
 			"screenBounds": {
 				"x": 0,
 				"y": 0,
-				"w": 1292.245361328125,
-				"h": 1119.7916259765625
+				"w": 1727.7777099609375,
+				"h": 1366.6666259765625
 			},
 			"insets": [
 				false,
@@ -4914,7 +4913,7 @@
 			"isChatting": false,
 			"highlightedUserIds": [],
 			"isFocused": true,
-			"devicePixelRatio": 1.7280000448226929,
+			"devicePixelRatio": 1.440000057220459,
 			"isCoarsePointer": false,
 			"isHoveringCanvas": true,
 			"openMenus": [],

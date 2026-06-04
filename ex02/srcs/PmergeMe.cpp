@@ -55,85 +55,72 @@ void PmergeMe::blockSwap(int &pos1, int &pos2)
 }
 
 /**
- * @brief This function sort the pairs of numbers in blocks based on the level
- * for this exemple : level = 0 | array = 45 3 15 2 89
- * we create a block of 2 pairs (because 2^(level:0)+1 = 2)
- * so these is the blocks : | 45 3 | 15 2 | 89
- * then we sort them      : | 3 45 | 2 15 | 89
- * level 1                : | 3 45   2 15 | 89
- * level 1                : | 2 15   3 45 | 89
- * When we can't create more blocks we stop the recursion
+ * @brief it check the last number of the block with the other last number blocks
+ * when the last number of the block is inferior of a last number block
+ * it insert the block before it.
  */
-int PmergeMe::recursiveMerge(int level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &ij, const int *j_suit)
+void PmergeMe::binaryInsert(int &level, std::vector<int> &to_insert, int &pos, int &nb_take)
 {
-    int tmp1 = 0;
-    int tmp2 = 0;
-    int pos1 = 0;
-    int pos2 = 0;
+    (void)level;
+    int i = 0;
+    int j = 1;
+    int actual_pos;
+    if (to_insert.size() <= 0 || pos == 1)
+        return ;
+    int cmp = *to_insert.rbegin();
 
-    for (size_t i = 0; i < this->first.size(); i++)
+    std::cout << "level= " << level << std::endl;
+    if (pos % 2 != 0)
+        actual_pos = pos * 2 -1;
+    else
+        actual_pos = pos * 2;    
+    for (std::vector<int>::iterator it = this->first.begin();
+        it != this->first.end(); it++)
     {
-        if ((level == 0 && (i % 2 == 0 || i == 0)))
+        if (j == actual_pos)
         {
-            tmp1 = this->first[i];
-            pos1 = i;
-        }
-        else if (level == 0)
-        {
-            tmp2 = this->first[i];
-            pos2 = i;
-            // std::cout << tmp1 << " | " << tmp2 << std::endl;
-            if (tmp1 > tmp2)
-                blockSwap(pos1, pos2);
-            pos1 = 0;
-            pos2 = 0;
-        }
-        if (level > 0 && (i + 1) % (1 << level) == 0)
-        {
-            if (pos1 == 0)
+            for (std::vector<int>::iterator its = this->first.begin();
+                its != it; its++)
             {
-                tmp1 = this->first[i];
-                pos1 = i;
-            }
-            else 
-            {
-                tmp2 = this->first[i];
-                pos2 = i;
-                // std::cout << tmp1 << " | " << tmp2 
-                // /* << " || " << (1 << level) << " ||| " << i % (1 << level) */ << std::endl;
-                if (tmp1 > tmp2)
-                    blockSwap(pos1, pos2);
-                pos1 = 0;
-                pos2 = 0;
+                if (i != 0 && (i + 1) % (nb_take) == 0)
+                {
+                    if (cmp <= *(its))
+                    {
+                        this->first.insert(its - (nb_take - 1), to_insert.begin(), to_insert.end());
+                        this->first.erase(it + nb_take, it + (nb_take * 2));
+                        return ;
+                    }
+                }
+                i++;
             }
         }
+        if (i != 0 && (i + 1) % (nb_take) == 0)
+        {
+            j++;
+        }
+        i++;
     }
-    std::cout << "end of recursive merge : ";
-    printIt(this->first, level);
-    if ((level == 0 && this->first.size() > 2)
-        || (double)(this->first.size()) / 2 >= (double)(2 << level))
-        recursiveMerge(level + 1, m, p, ij, j_suit);
-    p.clear();
-    m.clear();
-    ij.clear();
-    reverseMerge(level, m, p, ij, j_suit);
-    return (level);
 }
 
-void PmergeMe::binarySearch(int &level, std::vector<int> m, std::vector<int> p,
-    std::vector<int> ij)
+void PmergeMe::binarySearch(int &level, std::vector<int> &to_insert, std::vector<int> &p,
+    std::vector<int> &ij)
 {
-    (void)m;
     int i;
-    int j = 1;
+    int j;
     int nb_swap = *std::max_element(ij.begin(), ij.end()); //nb of number to swap
-    int nb_take = (1 << level);
+    int nb_take;
+
+    if (level == 0)
+        nb_take = (int)p.size(); 
+    else
+        nb_take = (1 << level);
     if (nb_swap == 1)
         return ; //don't need to search and sort
     for (std::vector<int>::iterator itj = ij.begin();
         itj != ij.end(); itj++)
     {
         i = 0;
+        j = 1;
         if (*itj != 1)
         {
             for (std::vector<int>::iterator it = p.begin();
@@ -141,23 +128,26 @@ void PmergeMe::binarySearch(int &level, std::vector<int> m, std::vector<int> p,
             {
                 if (j == *itj)
                 {
-                    m.push_back(*it);
+                    to_insert.push_back(*it);
                 }
-                if (i != 0 && (i + 1) % nb_take == 0)
+                if ((i != 0 && (i + 1) % nb_take == 0) || (i != 0 && level == 0))
                 {
                     j++;
-                    std::cout << "print it " << *it << std::endl;
                 }
                 i++;
             }
-            std::cout <<  << std::endl;
+            std::cout << "m: ";
+            printIt(to_insert, -1);
+            binaryInsert(level, to_insert, *itj, nb_take);
+            to_insert.clear();
+            std::cout << "end of reverse recursive: ";
+            printIt(this->first, -1);
         }
     }
 }
 
-void PmergeMe::calculMP(int &level, std::vector<int> &m, std::vector<int> &p)
+void PmergeMe::calculMP(int &level, std::vector<int> &p)
 {
-    (void)m;
     int j;
     int last_pos2 = 0;
     int pos1 = 0;
@@ -178,8 +168,6 @@ void PmergeMe::calculMP(int &level, std::vector<int> &m, std::vector<int> &p)
                 {
                     if ((j > last_pos2 && j <= pos1))
                         p.push_back(*it);
-                    // else if (j > pos1 && j <= pos2)
-                    //     m.push_back(*it);    
                     j++;
                 }
                 last_pos2 = pos2;
@@ -191,13 +179,22 @@ void PmergeMe::calculMP(int &level, std::vector<int> &m, std::vector<int> &p)
         {
             if (i % 2 == 0)
                 p.push_back(this->first.at(i));
-            // else
-            //     m.push_back(this->first.at(i));
         }
     }
 }
 
-void PmergeMe::reverseMerge(int &level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &ij, const int *j_suit)
+/**
+ * @brief The reverseMerge take a sort paired vector : 
+ * like that | 2 15   3 45 | 89
+ * and based on the level, we perform a binary search + an insert algorithm
+ * with the jacobsthal suit and we calcul the jacobsthal index.
+ * so here we can't sort Level 1: | 2 15    3 45 | 89
+ * so here we can't sort Level 0: | 2 15 |  3 45 | 89
+ * so here we can sort          : | 2 | 15 | 3 | 45 | 89
+ * the elements that stay in the vector are : 15 and 45
+ * and the elements that will be sort are : 2, 3 and 89
+ */
+void PmergeMe::reverseMerge(int &level, std::vector<int> &to_insert, std::vector<int> &p, std::vector<int> &ij, const int *j_suit)
 {
     int j = 0;
     int clast_insert = 0;
@@ -205,7 +202,7 @@ void PmergeMe::reverseMerge(int &level, std::vector<int> &m, std::vector<int> &p
     int psize = 0;
     int i;
     
-    calculMP(level, m, p);
+    calculMP(level, p);
     std::cout << "level " << level << std::endl << "p : ";
     printIt(p, -1);
     // calcul the jacobsthal index
@@ -231,8 +228,70 @@ void PmergeMe::reverseMerge(int &level, std::vector<int> &m, std::vector<int> &p
     std::cout << "ij : ";
     printIt(ij, -1);
     std::cout << std::endl;
-    binarySearch(level, m, p, ij);
-    // binary search
+    binarySearch(level, to_insert, p, ij);
+}
+
+/**
+ * @brief This function sort the pairs of numbers in blocks based on the level
+ * for this exemple : level = 0 | array = 45 3 15 2 89
+ * we create a block of 2 pairs (because 2^(level:0)+1 = 2)
+ * so these is the blocks : | 45 3 | 15 2 | 89
+ * then we sort them      : | 3 45 | 2 15 | 89
+ * level 1                : | 3 45   2 15 | 89
+ * level 1                : | 2 15   3 45 | 89
+ * When we can't create more blocks we stop the recursion
+ */
+int PmergeMe::recursiveMerge(int level, std::vector<int> &to_insert, std::vector<int> &p, std::vector<int> &ij, const int *j_suit)
+{
+    int tmp1 = 0;
+    int tmp2 = 0;
+    int pos1 = 0;
+    int pos2 = 0;
+
+    for (size_t i = 0; i < this->first.size(); i++)
+    {
+        if ((level == 0 && (i % 2 == 0 || i == 0)))
+        {
+            tmp1 = this->first[i];
+            pos1 = i;
+        }
+        else if (level == 0)
+        {
+            tmp2 = this->first[i];
+            pos2 = i;
+            if (tmp1 > tmp2)
+                blockSwap(pos1, pos2);
+            pos1 = 0;
+            pos2 = 0;
+        }
+        if (level > 0 && (i + 1) % (1 << level) == 0)
+        {
+            if (pos1 == 0)
+            {
+                tmp1 = this->first[i];
+                pos1 = i;
+            }
+            else 
+            {
+                tmp2 = this->first[i];
+                pos2 = i;
+                if (tmp1 > tmp2)
+                    blockSwap(pos1, pos2);
+                pos1 = 0;
+                pos2 = 0;
+            }
+        }
+    }
+    std::cout << "end of recursive merge : ";
+    printIt(this->first, level);
+    if ((level == 0 && this->first.size() > 2)
+        || (double)(this->first.size()) / 2 >= (double)(2 << level))
+        recursiveMerge(level + 1, to_insert, p, ij, j_suit);
+    p.clear();
+    to_insert.clear();
+    ij.clear();
+    reverseMerge(level, to_insert, p, ij, j_suit);
+    return (level);
 }
 
 void PmergeMe::merge()
