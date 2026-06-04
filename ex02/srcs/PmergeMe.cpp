@@ -82,7 +82,7 @@ void PmergeMe::binaryInsert(int &level, std::vector<int> &to_insert, int &pos, i
             for (std::vector<int>::iterator its = this->first.begin();
                 its != it; its++)
             {
-                if (i != 0 && (i + 1) % (nb_take) == 0)
+                if ((i != 0 && (i + 1) % (nb_take) == 0) || level == 0)
                 {
                     if (cmp <= *(its))
                     {
@@ -94,7 +94,7 @@ void PmergeMe::binaryInsert(int &level, std::vector<int> &to_insert, int &pos, i
                 i++;
             }
         }
-        if (i != 0 && (i + 1) % (nb_take) == 0)
+        if ((i != 0 && (i + 1) % (nb_take) == 0) || level == 0)
         {
             j++;
         }
@@ -111,7 +111,7 @@ void PmergeMe::binarySearch(int &level, std::vector<int> &to_insert, std::vector
     int nb_take;
 
     if (level == 0)
-        nb_take = (int)p.size(); 
+        nb_take = 1; 
     else
         nb_take = (1 << level);
     if (nb_swap == 1)
@@ -130,18 +130,14 @@ void PmergeMe::binarySearch(int &level, std::vector<int> &to_insert, std::vector
                 {
                     to_insert.push_back(*it);
                 }
-                if ((i != 0 && (i + 1) % nb_take == 0) || (i != 0 && level == 0))
-                {
+                if ((i != 0 && (i + 1) % nb_take == 0) || level == 0)
                     j++;
-                }
                 i++;
             }
-            std::cout << "m: ";
+            std::cout << "to_insert: ";
             printIt(to_insert, -1);
             binaryInsert(level, to_insert, *itj, nb_take);
             to_insert.clear();
-            std::cout << "end of reverse recursive: ";
-            printIt(this->first, -1);
         }
     }
 }
