@@ -88,6 +88,8 @@ void PmergeMe::binaryInsert(int &level, std::vector<int> &to_insert, int &pos, i
                     {
                         this->first.insert(its - (nb_take - 1), to_insert.begin(), to_insert.end());
                         this->first.erase(it + nb_take, it + (nb_take * 2));
+                        std::cout << "end : ";
+                        printIt(to_insert, -1);
                         return ;
                     }
                 }
