@@ -70,7 +70,12 @@ void PmergeMe::binaryInsert(int &level, std::vector<int> &to_insert, int &pos, i
     if (level != 0)
         actual_pos = pos * 2;
     else
-        actual_pos = pos;
+    {
+        if (pos == 2)
+            actual_pos = pos + 2;
+        else
+            actual_pos = pos + (pos - 1);
+    }
     if (to_insert.size() <= 0 || pos == 1)
         return ;
     while (i < this->first.size())
@@ -92,12 +97,16 @@ void PmergeMe::binaryInsert(int &level, std::vector<int> &to_insert, int &pos, i
             }
             else if (compare < this->first.at(i) && level == 0)
             {
-                std::cout << "ACTUAL_POS = " << actual_pos << " ACTUAL VAL= " << compare << std::endl;
+                std::cout << "INT I " << i << " ACTUAL_POS = " << actual_pos << " ACTUAL VAL= " << compare << std::endl;
+                std::cout << "ACTUAL_DELETION= " << *(this->first.begin() + actual_pos) << std::endl;
                 this->first.insert(this->first.begin() + i - (nb_take - 1), to_insert.begin(), to_insert.end());
-                std::cout << "ACTUAL_DELETION= " << *(this->first.begin() + actual_pos + (nb_take * 2 - 2)) << std::endl;
-
-                this->first.erase((this->first.begin() + actual_pos + (nb_take * 2)),
-                    (this->first.begin() + actual_pos + (nb_take * 3)));
+                std::cout << "ACTUAL_DELETION= " << *(this->first.begin() + actual_pos) << std::endl;
+                // if ((int)i < actual_pos)
+                //     this->first.erase((this->first.begin() + actual_pos + 1));
+                // else
+                this->first.erase((this->first.begin() + actual_pos));
+                // this->first.erase((this->first.begin() + actual_pos + 1),
+                //     (this->first.begin() + actual_pos + 2));
 
                 std::cout << "-> SORT_FINISHED= ";
                 printIt(this->first, -1);
@@ -290,7 +299,7 @@ void PmergeMe::merge()
 {
     static const int j_suit[] = {1, 3, 5, 11, 21, 43, 85, 171,
         341, 683, 1365, 2731, 5461, 10923, 21845, 43691, 87381, 174763, 349525};
-    int end_level = 0;
+    // int end_level = 0;
     std::vector<int> m;
     std::vector<int> p;
     std::vector<int> ij;
@@ -302,7 +311,7 @@ void PmergeMe::merge()
     std::cout << "Before: " << std::endl;
     printIt(this->first, -1);
     std::cout << std::endl;
-    end_level = recursiveMerge(0, m, p, ij, j_suit);
+    recursiveMerge(0, m, p, ij, j_suit);
     std::cout << "After: " << std::endl;
     printIt(this->first, -1);
 }
