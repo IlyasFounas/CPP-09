@@ -142,14 +142,11 @@ void PmergeMe::binarySearch(int &level, std::vector<int> &to_insert, std::vector
     }
 }
 
-void PmergeMe::calculMP(int &level, std::vector<int> &p, std::vector<int> &m)
+void PmergeMe::calculMPO(int &level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &o)
 {
     size_t i = 0;
     int pos = 1;
     int nb_take = 0;
-    int idx1 = 0;
-    int idx2 = 0;
-    bool idx1_assign = false;
 
     if (level == 0)
         nb_take = 1; 
@@ -163,72 +160,33 @@ void PmergeMe::calculMP(int &level, std::vector<int> &p, std::vector<int> &m)
             {
                 p.insert(p.end(), (this->first.begin() + (i - (nb_take - 1))),
                     (this->first.begin() + i + 1));
-                if (pos != 1)
-                {
-                    
-                }
+            }
+            else 
+            {
+                m.insert(m.end(), (this->first.begin() + (i - (nb_take - 1))),
+                    (this->first.begin() + i + 1));
             }
             pos++;
+        }
+        else if ((int)(this->first.size() / nb_take) * nb_take <= (int)i && level > 0)
+        {
+            o.push_back(this->first.at(i));
         }
         else if (level == 0)
         {
             if (i == 0 || i % 2 == 0)
-            {
-                // std::cout << "FIRST idx of deletion= " << i << " ACTUAL VAL= " << *(this->first.begin() + i) << std::endl;
                 p.push_back(this->first.at(i));
-                // if (i != 0)
-                //     erase_index.push_back(i);
-            }
             else 
-            {
                 m.push_back(this->first.at(i));
-            }
         }
         i++;
     }
-    // delete the pends into the main vec
-    // i = 0;
-    // for (std::vector<int>::iterator it = erase_index.begin();
-    //         it != erase_index.end(); it++)
-    // {
-    //     if (level > 0)
-    //     {
-    //         if (idx1_assign)
-    //         {
-    //             idx2 = *it;
-    //             if (i > 0)
-    //             {
-    //                 idx1 -= nb_take;
-    //                 idx2 -= nb_take;
-    //             }
-    //             this->first.erase(this->first.begin() + idx1, this->first.begin() + idx2);
-    //             idx1_assign = false;
-    //             idx2 = 0;
-    //             i++;
-    //             continue ;
-    //         }
-    //         if (!idx1_assign)
-    //         {
-    //             idx1 = *it;
-    //             idx1_assign = true;
-    //         }
-    //     }
-    //     else if (level == 0)
-    //     {
-    //         idx1 = *it;
-    //         if (i > 0)
-    //         {
-    //             idx1 -= i;
-    //         }
-    //         // std::cout << "idx of deletion= " << idx1 << " ACTUAL VAL= " << *(this->first.begin() + idx1) << std::endl;
-    //         this->first.erase((this->first.begin() + idx1));
-    //         i++;
-    //     }
-    // }
-    // std::cout << "FIRST AFTER DELETION= ";
-    // printIt(this->first, -1);
+    std::cout << std::endl << "MAIN LIST= ";
+    printIt(m);
     std::cout << std::endl << "PEND LIST= ";
-    printIt(p, -1);
+    printIt(p);
+    std::cout << std::endl << "ODDS LIST= ";
+    printIt(o);
 }
 
 /**
@@ -242,8 +200,8 @@ void PmergeMe::calculMP(int &level, std::vector<int> &p, std::vector<int> &m)
  * the elements that stay in the vector are : 15 and 45
  * and the elements that will be sort are : 2, 3 and 89
  */
-void PmergeMe::reverseMerge(int &level, std::vector<int> &to_insert,
-    std::vector<int> &p, std::vector<int> &ij, std::vector<int> &erase_index, const int *j_suit)
+void PmergeMe::reverseMerge(int &level, std::vector<int> &to_insert, std::vector<int> &m,
+    std::vector<int> &p, std::vector<int> &o, std::vector<int> &ij, const int *j_suit)
 {
     int j = 0;
     int clast_insert = 0;
@@ -253,9 +211,8 @@ void PmergeMe::reverseMerge(int &level, std::vector<int> &to_insert,
     
     std::cout << "-> LEVEL = " << level;
     std::cout << std::endl << "start state : ";
-    printIt(this->first, -1);
-    calculMP(level, p, erase_index);
-    erase_index.clear();
+    printIt(this->first);
+    calculMPO(level, m, p, o);
     return ;
     // calcul the jacobsthal index
     psize = (int)p.size() / (1 << level);
@@ -278,7 +235,7 @@ void PmergeMe::reverseMerge(int &level, std::vector<int> &to_insert,
         j++;
     }
     std::cout << "JACBOSTHAL INDEX LIST= ";
-    printIt(ij, -1);
+    printIt(ij);
     binarySearch(level, to_insert, p, ij);
 }
 
@@ -292,8 +249,8 @@ void PmergeMe::reverseMerge(int &level, std::vector<int> &to_insert,
  * level 1                : | 2 15   3 45 | 89
  * When we can't create more blocks we stop the recursion
  */
-int PmergeMe::recursiveMerge(int level, std::vector<int> &to_insert, std::vector<int> &p,
-    std::vector<int> &ij, std::vector<int> &erase_index, const int *j_suit)
+int PmergeMe::recursiveMerge(int level, std::vector<int> &to_insert, std::vector<int> &m,
+    std::vector<int> &p, std::vector<int> &o, std::vector<int> &ij, const int *j_suit)
 {
     int tmp1 = 0;
     int tmp2 = 0;
@@ -336,12 +293,13 @@ int PmergeMe::recursiveMerge(int level, std::vector<int> &to_insert, std::vector
     }
     if ((level == 0 && this->first.size() > 2)
         || (double)(this->first.size()) / 2 >= (double)(2 << level))
-        recursiveMerge(level + 1, to_insert, p, ij, erase_index, j_suit);
+        recursiveMerge(level + 1, to_insert, m, p, o, ij, j_suit);
+    m.clear();
     p.clear();
+    o.clear();
     to_insert.clear();
     ij.clear();
-    erase_index.clear();
-    reverseMerge(level, to_insert, p, ij, erase_index, j_suit);
+    reverseMerge(level, to_insert, m, p, o, ij, j_suit);
     std::cout << std::endl << std::endl;;
     return (level);
 }
@@ -351,26 +309,26 @@ void PmergeMe::merge()
     static const int j_suit[] = {1, 3, 5, 11, 21, 43, 85, 171,
         341, 683, 1365, 2731, 5461, 10923, 21845, 43691, 87381, 174763, 349525};
     // int end_level = 0;
+    std::vector<int> to_insert;
     std::vector<int> m;
     std::vector<int> p;
+    std::vector<int> o;
     std::vector<int> ij;
-    std::vector<int> erase_index;
     if (this->first.size() < 2)
     {
         std::cout << "Error: you should put at least two numbers" << std::endl;
         return ;
     }
     std::cout << "Before: " << std::endl;
-    printIt(this->first, -1);
+    printIt(this->first);
     std::cout << std::endl;
-    recursiveMerge(0, m, p, ij, erase_index, j_suit);
+    recursiveMerge(0, to_insert, m, p, o, ij, j_suit);
     std::cout << "After: " << std::endl;
-    printIt(this->first, -1);
+    printIt(this->first);
 }
 
-void PmergeMe::printIt(std::vector<int> &print_vec, const int &level)
+void PmergeMe::printIt(std::vector<int> &print_vec)
 {
-    (void)level;
     for (std::vector<int>::iterator it = print_vec.begin();
         it != print_vec.end(); it++)
     {

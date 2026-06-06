@@ -22,14 +22,14 @@ class PmergeMe {
         void    binaryInsert(int &level, std::vector<int> &to_insert, int &pos, int &nb_take);
         void    binarySearch(int &level, std::vector<int> &to_insert, std::vector<int> &p, 
                     std::vector<int> &ij);
-        void    calculMP(int &level, std::vector<int> &p, std::vector<int> &m);
-        void    reverseMerge(int &level, std::vector<int> &to_insert, std::vector<int> &p,
-                    std::vector<int> &ij, std::vector<int> &erase_index, const int *j_suit);
-        int     recursiveMerge(int level, std::vector<int> &to_insert, std::vector<int> &p,
-                    std::vector<int> &erase_index, std::vector<int> &ij, const int *j_suit);
+        void    calculMPO(int &level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &o);
+        void    reverseMerge(int &level, std::vector<int> &to_insert, std::vector<int> &m,
+                    std::vector<int> &p, std::vector<int> &o, std::vector<int> &ij, const int *j_suit);
+        int     recursiveMerge(int level, std::vector<int> &to_insert, std::vector<int> &m,
+                    std::vector<int> &p, std::vector<int> &o, std::vector<int> &ij, const int *j_suit);
         void    merge();
         
-        void    printIt(std::vector<int> &print_vec, const int &level);
+        void    printIt(std::vector<int> &print_vec);
         void    insert(const std::string &s);
 } ;
 
