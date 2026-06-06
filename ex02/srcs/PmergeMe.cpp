@@ -142,7 +142,7 @@ void PmergeMe::binarySearch(int &level, std::vector<int> &to_insert, std::vector
     }
 }
 
-void PmergeMe::calculMP(int &level, std::vector<int> &p, std::vector<int> &erase_index)
+void PmergeMe::calculMP(int &level, std::vector<int> &p, std::vector<int> &m)
 {
     size_t i = 0;
     int pos = 1;
@@ -165,8 +165,7 @@ void PmergeMe::calculMP(int &level, std::vector<int> &p, std::vector<int> &erase
                     (this->first.begin() + i + 1));
                 if (pos != 1)
                 {
-                    erase_index.push_back(i - (nb_take - 1));
-                    erase_index.push_back(i + 1);
+                    
                 }
             }
             pos++;
@@ -177,53 +176,57 @@ void PmergeMe::calculMP(int &level, std::vector<int> &p, std::vector<int> &erase
             {
                 // std::cout << "FIRST idx of deletion= " << i << " ACTUAL VAL= " << *(this->first.begin() + i) << std::endl;
                 p.push_back(this->first.at(i));
-                if (i != 0)
-                    erase_index.push_back(i);
+                // if (i != 0)
+                //     erase_index.push_back(i);
+            }
+            else 
+            {
+                m.push_back(this->first.at(i));
             }
         }
         i++;
     }
     // delete the pends into the main vec
-    i = 0;
-    for (std::vector<int>::iterator it = erase_index.begin();
-            it != erase_index.end(); it++)
-    {
-        if (level > 0)
-        {
-            if (idx1_assign)
-            {
-                idx2 = *it;
-                if (i > 0)
-                {
-                    idx1 -= nb_take;
-                    idx2 -= nb_take;
-                }
-                this->first.erase(this->first.begin() + idx1, this->first.begin() + idx2);
-                idx1_assign = false;
-                idx2 = 0;
-                i++;
-                continue ;
-            }
-            if (!idx1_assign)
-            {
-                idx1 = *it;
-                idx1_assign = true;
-            }
-        }
-        else if (level == 0)
-        {
-            idx1 = *it;
-            if (i > 0)
-            {
-                idx1 -= i;
-            }
-            // std::cout << "idx of deletion= " << idx1 << " ACTUAL VAL= " << *(this->first.begin() + idx1) << std::endl;
-            this->first.erase((this->first.begin() + idx1));
-            i++;
-        }
-    }
-    std::cout << "FIRST AFTER DELETION= ";
-    printIt(this->first, -1);
+    // i = 0;
+    // for (std::vector<int>::iterator it = erase_index.begin();
+    //         it != erase_index.end(); it++)
+    // {
+    //     if (level > 0)
+    //     {
+    //         if (idx1_assign)
+    //         {
+    //             idx2 = *it;
+    //             if (i > 0)
+    //             {
+    //                 idx1 -= nb_take;
+    //                 idx2 -= nb_take;
+    //             }
+    //             this->first.erase(this->first.begin() + idx1, this->first.begin() + idx2);
+    //             idx1_assign = false;
+    //             idx2 = 0;
+    //             i++;
+    //             continue ;
+    //         }
+    //         if (!idx1_assign)
+    //         {
+    //             idx1 = *it;
+    //             idx1_assign = true;
+    //         }
+    //     }
+    //     else if (level == 0)
+    //     {
+    //         idx1 = *it;
+    //         if (i > 0)
+    //         {
+    //             idx1 -= i;
+    //         }
+    //         // std::cout << "idx of deletion= " << idx1 << " ACTUAL VAL= " << *(this->first.begin() + idx1) << std::endl;
+    //         this->first.erase((this->first.begin() + idx1));
+    //         i++;
+    //     }
+    // }
+    // std::cout << "FIRST AFTER DELETION= ";
+    // printIt(this->first, -1);
     std::cout << std::endl << "PEND LIST= ";
     printIt(p, -1);
 }
@@ -253,6 +256,7 @@ void PmergeMe::reverseMerge(int &level, std::vector<int> &to_insert,
     printIt(this->first, -1);
     calculMP(level, p, erase_index);
     erase_index.clear();
+    return ;
     // calcul the jacobsthal index
     psize = (int)p.size() / (1 << level);
     i = psize;

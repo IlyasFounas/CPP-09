@@ -22,7 +22,7 @@ class PmergeMe {
         void    binaryInsert(int &level, std::vector<int> &to_insert, int &pos, int &nb_take);
         void    binarySearch(int &level, std::vector<int> &to_insert, std::vector<int> &p, 
                     std::vector<int> &ij);
-        void    calculMP(int &level, std::vector<int> &p, std::vector<int> &erase_index);
+        void    calculMP(int &level, std::vector<int> &p, std::vector<int> &m);
         void    reverseMerge(int &level, std::vector<int> &to_insert, std::vector<int> &p,
                     std::vector<int> &ij, std::vector<int> &erase_index, const int *j_suit);
         int     recursiveMerge(int level, std::vector<int> &to_insert, std::vector<int> &p,
