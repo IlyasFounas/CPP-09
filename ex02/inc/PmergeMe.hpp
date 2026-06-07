@@ -19,9 +19,10 @@ class PmergeMe {
 
         // member functions
         void    blockSwap(int &pos1, int &pos2);
-        void    binaryInsert(int &level, std::vector<int> &to_insert, int &pos, int &nb_take);
-        void    binarySearch(int &level, std::vector<int> &to_insert, std::vector<int> &p, 
-                    std::vector<int> &ij);
+        void    binaryInsert(int &level, std::vector<int> &to_insert,
+                    std::vector<int> &m, int &nb_take);
+        void    binarySearch(int &level, std::vector<int> &to_insert, 
+                    std::vector<int> &p, std::vector<int> &m, std::vector<int> &ij);
         void    calculMPO(int &level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &o);
         void    reverseMerge(int &level, std::vector<int> &to_insert, std::vector<int> &m,
                     std::vector<int> &p, std::vector<int> &o, std::vector<int> &ij, const int *j_suit);

@@ -59,43 +59,46 @@ void PmergeMe::blockSwap(int &pos1, int &pos2)
  * when the last number of the block is inferior of a last number block
  * it insert the block before it.
  */
-void PmergeMe::binaryInsert(int &level, std::vector<int> &to_insert, int &pos, int &nb_take)
+void PmergeMe::binaryInsert(int &level, std::vector<int> &to_insert,
+    std::vector<int> &m, int &nb_take)
 {
     size_t i = 0;
     int j = 1;
     int compare = *to_insert.rbegin();
 
-    if (to_insert.size() <= 0 || pos == 1)
+    std::cout << "HERE" << std::endl;
+    if (to_insert.size() <= 0)
         return ;
-    while (i < this->first.size())
+    while (i < m.size())
     {
+        std::cout << "h" << std::endl;
         if (((i != 0 && (i + 1) % (nb_take) == 0) && level != 0) || level == 0)
         {
-            if (compare < this->first.at(i) && level > 0)
+            if (compare < m.at(i) && level > 0)
             {
-                std::cout << " VEC_VAL = " << this->first.at(i) << " ACTUAL VAL= " << compare << std::endl;
-                this->first.insert(this->first.begin() + i - (nb_take - 1), to_insert.begin(), to_insert.end());
+                std::cout << " VEC_VAL = " << m.at(i) << " ACTUAL VAL= " << compare << std::endl;
+                m.insert(m.begin() + i - (nb_take - 1), to_insert.begin(), to_insert.end());
 
-                // std::cout << "-> SORT_FINISHED= ";
-                // printIt(this->first, -1);
+                std::cout << "-> SORT_FINISHED= ";
+                printIt(m);
                 return ;
             }
-            else if (compare < this->first.at(i) && level == 0)
+            else if (compare < m.at(i) && level == 0)
             {
-                // std::cout << "INT I " << i << " VEC_VAL = " << this->first.at(i) << " ACTUAL VAL= " << compare << std::endl;
-                this->first.insert(this->first.begin() + i - (nb_take - 1), to_insert.begin(), to_insert.end());
+                // std::cout << "INT I " << i << " VEC_VAL = " << m.at(i) << " ACTUAL VAL= " << compare << std::endl;
+                m.insert(m.begin() + i - (nb_take - 1), to_insert.begin(), to_insert.end());
 
-                // std::cout << "-> SORT_FINISHED= ";
-                // printIt(this->first, -1);
+                std::cout << "-> SORT_FINISHED= ";
+                printIt(m);
                 return ;
             }
-            else if ((int)(this->first.size() - (i + 1)) < nb_take && level > 0)
+            else if ((int)(m.size() - (i + 1)) < nb_take && level > 0)
             {
-                std::cout << " VEC_VAL = " << this->first.at(i) << " ACTUAL VAL= " << compare << std::endl;
-                this->first.insert(this->first.begin() + i + 1, to_insert.begin(), to_insert.end());
+                std::cout << " VEC_VAL = " << m.at(i) << " ACTUAL VAL= " << compare << std::endl;
+                m.insert(m.begin() + i + 1, to_insert.begin(), to_insert.end());
 
-                // std::cout << "-> SORT_FINISHED= ";
-                // printIt(this->first, -1);
+                std::cout << "-> SORT_FINISHED= ";
+                printIt(m);
                 return ;
             }
             j++;
@@ -104,41 +107,38 @@ void PmergeMe::binaryInsert(int &level, std::vector<int> &to_insert, int &pos, i
     }
 }
 
-void PmergeMe::binarySearch(int &level, std::vector<int> &to_insert, std::vector<int> &p,
-    std::vector<int> &ij)
+void PmergeMe::binarySearch(int &level, std::vector<int> &to_insert, 
+    std::vector<int> &p, std::vector<int> &m, std::vector<int> &ij)
 {
     int i;
     int j;
-    int nb_swap = *std::max_element(ij.begin(), ij.end()); //nb of number to swap
+    // int nb_swap = *std::max_element(ij.begin(), ij.end()); //nb of number to swap
     int nb_take;
 
     if (level == 0)
         nb_take = 1; 
     else
         nb_take = (1 << level);
-    if (nb_swap == 1)
-        return ; //don't need to search and sort
+    // if (nb_swap == 1)
+    //     return ; //don't need to search and sort
     for (std::vector<int>::iterator itj = ij.begin();
         itj != ij.end(); itj++)
     {
         i = 0;
         j = 1;
-        if (*itj != 1)
+        for (std::vector<int>::iterator it = p.begin();
+            it != p.end(); it++)
         {
-            for (std::vector<int>::iterator it = p.begin();
-                it != p.end(); it++)
+            if (j == *itj)
             {
-                if (j == *itj)
-                {
-                    to_insert.push_back(*it);
-                }
-                if ((i != 0 && (i + 1) % nb_take == 0) || level == 0)
-                    j++;
-                i++;
+                to_insert.push_back(*it);
             }
-            binaryInsert(level, to_insert, *itj, nb_take);
-            to_insert.clear();
+            if ((i != 0 && (i + 1) % nb_take == 0) || level == 0)
+                j++;
+            i++;
         }
+        binaryInsert(level, to_insert, m, nb_take);
+        to_insert.clear();
     }
 }
 
@@ -183,9 +183,9 @@ void PmergeMe::calculMPO(int &level, std::vector<int> &m, std::vector<int> &p, s
     }
     std::cout << std::endl << "MAIN LIST= ";
     printIt(m);
-    std::cout << std::endl << "PEND LIST= ";
+    std::cout << "PEND LIST= ";
     printIt(p);
-    std::cout << std::endl << "ODDS LIST= ";
+    std::cout << "ODDS LIST= ";
     printIt(o);
 }
 
@@ -213,7 +213,6 @@ void PmergeMe::reverseMerge(int &level, std::vector<int> &to_insert, std::vector
     std::cout << std::endl << "start state : ";
     printIt(this->first);
     calculMPO(level, m, p, o);
-    return ;
     // calcul the jacobsthal index
     psize = (int)p.size() / (1 << level);
     i = psize;
@@ -236,7 +235,8 @@ void PmergeMe::reverseMerge(int &level, std::vector<int> &to_insert, std::vector
     }
     std::cout << "JACBOSTHAL INDEX LIST= ";
     printIt(ij);
-    binarySearch(level, to_insert, p, ij);
+    std::cout << std::endl;
+    binarySearch(level, to_insert, p, m, ij);
 }
 
 /**
@@ -300,6 +300,8 @@ int PmergeMe::recursiveMerge(int level, std::vector<int> &to_insert, std::vector
     to_insert.clear();
     ij.clear();
     reverseMerge(level, to_insert, m, p, o, ij, j_suit);
+    this->first = m;
+    this->first.insert(this->first.end(), o.begin(), o.end());
     std::cout << std::endl << std::endl;;
     return (level);
 }
