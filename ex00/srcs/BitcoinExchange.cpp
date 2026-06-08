@@ -46,7 +46,7 @@ void BitcoinExchange::parseDataFile()
     std::string s1;
     std::string s2;
 
-    read_file.open("data/data.csv", std::ios::app);
+    read_file.open("data/test.csv", std::ios::app);
     while (std::getline(read_file, line))
     {
 
@@ -206,12 +206,11 @@ long int BitcoinExchange::extractDateValue(const std::string &date, int &err, st
 long double BitcoinExchange::returnDataValue(const std::string &input_date, int &err, std::string &error_message)
 {
     std::string closest_date;
-    // 1. Vérifier que la date est valide
+    
     if (extractDateValue(input_date, err, error_message, false) == -1)
         return -1;
     if (!checkRequirements(this->year, this->month, this->day, error_message, err))
         return -1;
-
     // find the exect date in the database
     if (this->_internal_db.size() <= 0)
         return (0);
@@ -228,7 +227,6 @@ long double BitcoinExchange::returnDataValue(const std::string &input_date, int 
     {
         std::map<std::string, std::string>::iterator prev_it = it;
         prev_it--;
-        // Convertir en YYYYMMDD pour comparaison numérique
         long input_num = std::atol(input_date.substr(0, 4).c_str()) * 10000 +
                         std::atol(input_date.substr(5, 2).c_str()) * 100 +
                         std::atol(input_date.substr(8, 2).c_str());
@@ -266,6 +264,7 @@ long double BitcoinExchange::calculTheExchange(const std::string &s1, const std:
     long double data_value = returnDataValue(s1, err, error_message);
     if (err == 1)
         return 0;
+    std::cout << "DATA = " << data_value << std::endl;
     return (long double)nb * data_value;
 }
 
