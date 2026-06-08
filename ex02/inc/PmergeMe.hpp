@@ -17,7 +17,19 @@ class PmergeMe {
         PmergeMe &operator=(const PmergeMe &cpy);
         ~PmergeMe();
 
-        // member functions
+        // deque member functions
+        void    d_blockSwap(int &pos1, int &pos2);
+        void    d_binaryInsert(int &level, std::deque<int> &to_insert,
+                    std::deque<int> &m, int &nb_take);
+        void    d_binarySearch(int &level, std::deque<int> &to_insert, 
+                    std::deque<int> &p, std::deque<int> &m, std::deque<int> &ij);
+        void    d_calculMPO(int &level, std::deque<int> &m, std::deque<int> &p, std::deque<int> &o);
+        void    d_reverseMerge(int &level, std::deque<int> &to_insert, std::deque<int> &m,
+                    std::deque<int> &p, std::deque<int> &o, std::deque<int> &ij, const int *j_suit);
+        int     d_recursiveMerge(int level, std::deque<int> &to_insert, std::deque<int> &m,
+                    std::deque<int> &p, std::deque<int> &o, std::deque<int> &ij, const int *j_suit);
+        
+        // vector member functions
         void    blockSwap(int &pos1, int &pos2);
         void    binaryInsert(int &level, std::vector<int> &to_insert,
                     std::vector<int> &m, int &nb_take);
@@ -28,10 +40,11 @@ class PmergeMe {
                     std::vector<int> &p, std::vector<int> &o, std::vector<int> &ij, const int *j_suit);
         int     recursiveMerge(int level, std::vector<int> &to_insert, std::vector<int> &m,
                     std::vector<int> &p, std::vector<int> &o, std::vector<int> &ij, const int *j_suit);
+
         void    merge();
-        
         void    printIt(std::vector<int> &print_vec);
-        void    insert(const std::string &s);
+        void    printIt(std::deque<int> &print_vec);
+        void    insert(const std::string &s, int &error);
 } ;
 
 #endif
