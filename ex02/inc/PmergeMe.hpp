@@ -18,7 +18,7 @@ class PmergeMe {
         ~PmergeMe();
 
         // deque member functions
-        void    d_blockSwap(int &pos1, int &pos2);
+        void    d_blockSwap(int &pos1, int &pos2, int &level);
         void    d_binaryInsert(int &level, std::deque<int> &to_insert,
                     std::deque<int> &m, int &nb_take);
         void    d_binarySearch(int &level, std::deque<int> &to_insert, 
@@ -30,7 +30,7 @@ class PmergeMe {
                     std::deque<int> &p, std::deque<int> &o, std::deque<int> &ij, const int *j_suit);
         
         // vector member functions
-        void    blockSwap(int &pos1, int &pos2);
+        void    blockSwap(int &pos1, int &pos2, int &level);
         void    binaryInsert(int &level, std::vector<int> &to_insert,
                     std::vector<int> &m, int &nb_take);
         void    binarySearch(int &level, std::vector<int> &to_insert, 
@@ -44,7 +44,7 @@ class PmergeMe {
         void    merge();
         void    printIt(std::vector<int> &print_vec);
         void    printIt(std::deque<int> &print_vec);
-        void    insert(const std::string &s, int &error);
+        void    insert(char **argv, int &error);
 } ;
 
 #endif
