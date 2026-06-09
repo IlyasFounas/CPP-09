@@ -31,22 +31,20 @@ class PmergeMe {
         
         // vector member functions
         void    blockSwap(int &pos1, int &pos2, int &level);
-        // void    binaryInsert(int &level, std::vector<int> &to_insert,
-        //             std::vector<int> &m, int &nb_take);
-        void    binaryInsert(int &level, int &pos,
-                    std::vector<int> &m, std::vector<int> &p, std::vector<int> &o, int &nb_take);
-        // void    binarySearch(int &level, std::vector<int> &to_insert, 
-        //             std::vector<int> &p, std::vector<int> &m, std::vector<int> &ij);
-        void    binarySearch(int &level, std::vector<int> &to_insert, 
-                    std::vector<int> &m, std::vector<int> &p, std::vector<int> &o, std::vector<int> &ij);
-        void    calculMPO(int &level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &o);
-        void    reverseMerge(int &level, std::vector<int> &to_insert, std::vector<int> &m,
-                    std::vector<int> &p, std::vector<int> &o, std::vector<int> &ij, const int *j_suit);
-        int     recursiveMerge(int level, std::vector<int> &to_insert, std::vector<int> &m,
-                    std::vector<int> &p, std::vector<int> &o, std::vector<int> &ij, const int *j_suit);
+        void    blockRotate(int &nb_take, const int &pos1, const int &pos2);
+        void    updateMP(std::vector<int> &m, std::vector<int> &p,
+                    int &dst, int &src, int &nb_take);
+        void    binaryInsert(int &pos, std::vector<int> &m,
+                    std::vector<int> &p, int &nb_take, int &level);
+        void    binarySearch(int &level,
+                    std::vector<int> &m, std::vector<int> &p, std::vector<int> &ij);
+        void    calculMPO(int &level, std::vector<int> &m, std::vector<int> &p);
+        void    reverseMerge(int &level, std::vector<int> &m,
+                    std::vector<int> &p, std::vector<int> &ij, const int *j_suit);
+        int     recursiveMerge(int level, std::vector<int> &m,
+                    std::vector<int> &p, std::vector<int> &ij, const int *j_suit);
 
 
-        void    blockRotate(int &nb_take, std::vector<int> &o, const int &pos1, const int &pos2);
         void    merge();
         void    printIt(std::vector<int> &print_vec);
         void    printIt(std::deque<int> &print_vec);
