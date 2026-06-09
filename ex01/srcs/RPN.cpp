@@ -63,6 +63,11 @@ bool RPN::expressionCheck(std::string &error_message)
             nb_digits = 0;
             nb_ope = 0;
         }
+        else 
+        {
+            error_message = "Error: wrong input";
+            return false;
+        }
     }
     return true;
 }
