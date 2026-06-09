@@ -66,6 +66,18 @@ void BitcoinExchange::parseDataFile()
             if (s1 != "date" || s2 != "exchange_rate")
                 throw BadInputException();
         }
+        else
+        {   if (s2.size() == 0)
+                throw BadInputException();
+            for (size_t i = 0; i < s2.size(); i++)
+            {
+                if (s2[i] != '-' && s2[i] != '.')
+                {
+                    if (!isdigit(s2[i]))
+                        throw BadInputException();
+                }
+            }
+        }
         insertDataValue(s1, s2);
         i++;
     }
@@ -264,7 +276,6 @@ long double BitcoinExchange::calculTheExchange(const std::string &s1, const std:
     long double data_value = returnDataValue(s1, err, error_message);
     if (err == 1)
         return 0;
-    std::cout << "DATA = " << data_value << std::endl;
     return (long double)nb * data_value;
 }
 
@@ -318,7 +329,7 @@ const char *BitcoinExchange::NoFileException::what() const throw()
 
 const char *BitcoinExchange::BadInputException::what() const throw()
 {
-    return "Error: bad input in the data csv";
+    return "Error: bad input in the database csv";
 }
 
 const char *BitcoinExchange::BadInputFirstLineException::what() const throw()
