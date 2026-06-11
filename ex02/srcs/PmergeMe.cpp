@@ -498,15 +498,13 @@ void PmergeMe::merge()
 {
     static const int j_suit[] = {1, 3, 5, 11, 21, 43, 85, 171,
         341, 683, 1365, 2731, 5461, 10923, 21845, 43691, 87381, 174763, 349525};
-    std::vector<int> to_insert;
     std::vector<int> m;
     std::vector<int> p;
-    std::vector<int> o;
     std::vector<int> ij;
 
-    std::deque<int> to_insert2;
     std::deque<int> m2;
     std::deque<int> p2;
+    std::deque<int> ij2;
     double duration;
     double duration2;
     clock_t start;
@@ -524,12 +522,12 @@ void PmergeMe::merge()
     // printIt(this->snd);
 
     start = clock();
-    recursiveMerge(0, to_insert, m, p, j_suit);
+    recursiveMerge(0, m, p, ij, j_suit);
     end = clock();
     duration = (double)(end - start) * 1000000 / CLOCKS_PER_SEC;
 
     start2 = clock();
-    d_recursiveMerge(0, to_insert2, m2, p2, j_suit);
+    d_recursiveMerge(0, m2, p2, ij2, j_suit);
     end2 = clock();
     duration2 = (double)(end2 - start2) * 1000000 / CLOCKS_PER_SEC;
 
