@@ -521,7 +521,7 @@ void PmergeMe::merge()
     }
     std::cout << "Before: " << std::endl;
     printIt(this->first);
-    printIt(this->snd);
+    // printIt(this->snd);
 
     start = clock();
     recursiveMerge(0, to_insert, m, p, j_suit);
@@ -535,7 +535,7 @@ void PmergeMe::merge()
 
     std::cout << "After: " << std::endl;
     printIt(this->first);
-    printIt(this->snd);
+    // printIt(this->snd);
     std::cout << "(Vector) Time to process a range of " 
     << this->first.size() << " elements with PmergeMe: " << duration / 1000 << " ms" << std::endl;
     std::cout << "(Deque) Time to process a range of " 
