@@ -68,7 +68,7 @@ void PmergeMe::d_binaryInsert(int &pos, std::deque<int> &m,
     while (left < right)
     {
         mid = (left + right) / 2;
-        if (this->snd.at(m.at(mid) + nb_take - 1) > compare)
+        if (m.at(mid) + (nb_take - 1) < (int)this->snd.size() && this->snd.at(m.at(mid) + nb_take - 1) > compare)
             right = mid;
         else
             left = mid + 1;
@@ -302,7 +302,7 @@ void PmergeMe::binaryInsert(int &pos, std::vector<int> &m,
     while (left < right)
     {
         mid = (left + right) / 2;
-        if (this->first.at(m.at(mid) + nb_take - 1) > compare)
+        if (m.at(mid) + (nb_take - 1) < (int)this->first.size() && this->first.at(m.at(mid) + (nb_take - 1)) > compare)
             right = mid;
         else
             left = mid + 1;
