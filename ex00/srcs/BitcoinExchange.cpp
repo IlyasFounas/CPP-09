@@ -1,4 +1,7 @@
 #include "BitcoinExchange.hpp"
+#include <cstdlib>
+#include <cerrno>
+#include <cmath>
 
 BitcoinExchange::BitcoinExchange() : _file_name("NULL"), year(0), month(0),
     day(0), year_csv(0), month_csv(0), day_csv(0) {}
@@ -209,7 +212,6 @@ long int BitcoinExchange::extractDateValue(const std::string &date, int &err, st
     return (0);
 }
 
-#include <cstdlib>
 /**
  * @brief This function return the value of the closer input date in the csv database
  * year 2021-05-22 et input = 2011-03-06
@@ -259,18 +261,37 @@ long double BitcoinExchange::returnDataValue(const std::string &input_date, int 
     return std::strtold(this->_internal_db[closest_date].c_str(), NULL);
 }
 
+
 long double BitcoinExchange::calculTheExchange(const std::string &s1, const std::string &s2,
     std::string &error_message)
 {
     int err = 0;
-    long int nb = ft_atoi(s2, err, error_message);
-    if (err == 1)
+    char *error_check = NULL;
+
+    long double nb = std::strtold(s2.c_str(), &error_check);
+    if (errno == ERANGE || nb == HUGE_VALL || nb == -HUGE_VALL)
+    {
+        error_message = "Error: overflow detected.";
         return 0;
+    }
+    if (error_check == NULL || *error_check != '\0')
+    {
+        error_message = "Error: wrong input.";
+        return 0;
+    }
     if (nb > 2147483647 || nb < -2147483648)
+    {
+        error_message = "Error: overflow detected.";
         return 0;
+    }
     if (nb < 0)
     {
         error_message = "Error: not a positive number.";
+        return 0;
+    }
+    if (nb > 1000)
+    {
+        error_message = "Error: a valid input in between 0 and 1000.";
         return 0;
     }
     long double data_value = returnDataValue(s1, err, error_message);
