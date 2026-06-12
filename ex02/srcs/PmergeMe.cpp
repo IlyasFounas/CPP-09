@@ -303,23 +303,29 @@ void PmergeMe::binaryInsert(int &pos, std::vector<int> &m,
     {
         mid = (left + right) / 2;
         if (m.at(mid) + (nb_take - 1) < (int)this->first.size() && this->first.at(m.at(mid) + (nb_take - 1)) > compare)
+        {
+            std::cout << "src=" << this->first.at(m.at(mid) + (nb_take - 1)) << " compare=" << compare 
+                    << " insert_at=" << left << std::endl;
             right = mid;
+        }
         else
+        {
+            std::cout << "HERE src=" << this->first.at(m.at(mid) + (nb_take - 1)) << " compare=" << compare 
+                    << " insert_at=" << left << std::endl;
             left = mid + 1;
+        }
     }
     if (left == (int)m.size())
         return ;
 
     int dst = m.at(left);
+    // std::cout << "src=" << this->first.at(dst + (nb_take - 1)) << " compare=" << compare 
+    //           << " insert_at=" << left << std::endl;
     if (src < dst)
     {
         m.insert(m.begin() + left, src);
         return ;
     }
-    // std::cout << "main vec = ";
-    // printIt(m);
-    // std::cout << "src=" << this->first.at(src) << " compare=" << compare 
-    //           << " insert_at=" << left << std::endl;
     blockRotate(nb_take, dst, src);
     updateMP(m, p, dst, src, nb_take);
     m.insert(m.begin() + left, dst);
@@ -334,11 +340,13 @@ void PmergeMe::binarySearch(int &level,
         nb_take = 1; 
     else
         nb_take = (1 << level);
+    std::cout << " | level " << level << " | " << std::endl;
     for (std::vector<int>::iterator itj = ij.begin();
         itj != ij.end(); itj++)
     {
-        // std::cout << " | acutal ij | " << *itj << std::endl;
         binaryInsert(*itj, m, p, nb_take);
+        std::cout << " | acutal vec | ";
+        printIt(this->first);
     }
 }
 
@@ -482,12 +490,15 @@ int PmergeMe::recursiveMerge(int level, std::vector<int> &m,
             }
         }
     }
+    std::cout << "pair swap = ";
+    printIt(this->first);
     if ((level == 0 && this->first.size() > 2)
         || (double)(this->first.size()) / 2 >= (double)(2 << level))
         recursiveMerge(level + 1, m, p, ij, j_suit);
     m.clear();
     p.clear();
     ij.clear();
+    std::cout << std::endl;
     reverseMerge(level, m, p, ij, j_suit);
     return (level);
 }
