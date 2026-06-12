@@ -157,7 +157,7 @@ bool BitcoinExchange::checkRequirements(long int year, long int month, long int 
         return (false);
     }
     if ((day < 1 || day > 31)
-        || (day == 29 && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))))
+        || (month == 2 && day == 29 && ((year % 4 != 0 && year % 100 != 0) || (year % 400 == 0))))
     {
         error_message = "Error: no available data at this date";
         err = 1;
