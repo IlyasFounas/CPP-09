@@ -256,119 +256,193 @@ void PmergeMe::blockSwap(int &pos1, int &pos2, int &level)
                  first.begin() + (pos2 - block_size + 1));
 }
 
-void PmergeMe::binaryInsert(std::vector<int> &block,
-    std::vector<int> &m, int &nb_take)
+void PmergeMe::blockRotate(int &nb_take, const int &dst, const int &src)
 {
-    int compare = block.at(nb_take - 1);
+    // std::cout << " | dst of the block = "<< dst 
+    // << std::endl << " | actual idx of the block | " << src 
+    // << std::endl << " | how much to deplace | " << nb_take 
+    // << std::endl << " | src_nb | " << this->first.at(src)
+    // << std::endl << " | dst_nb | " << this->first.at(dst) << std::endl << std::endl;
+    if (dst > src) //specific case when destination_idx is bigger than source_idx
+    {
+        // std::rotate(first.begin() + src,
+        //     first.begin() + src + nb_take,
+        //     first.begin() + dst + nb_take);
+        std::rotate(first.begin() + src,
+        first.begin() + src + nb_take,
+        first.begin() + dst);  // ← pas de + nb_take ici
+    }
+    else
+    {
+        std::rotate(first.begin() + dst, //dst of the block
+                    first.begin() + src, //actual idx of the block
+                    first.begin() + src + nb_take); // how much block we deplace from the actual block
+    }
+    // std::cout << "print after = ";
+    // printIt(this->first);
+}
+
+void PmergeMe::updateMP(std::vector<int> &m, std::vector<int> &p,
+   const int &dst, int &src, int &nb_take)
+{
+    for (int i = 0; i < (int)m.size(); i++)
+        if (m.at(i) >= dst && m.at(i) < src)
+            m.at(i) += nb_take;
+    for (int i = 0; i < (int)p.size(); i++)
+        if (p.at(i) >= dst && p.at(i) < src)
+            p.at(i) += nb_take;
+}
+
+void PmergeMe::binaryInsert(int &pos, std::vector<int> &m,
+    std::vector<int> &p, int &nb_take)
+{
+    int src     = p.at(pos - 1);
+    int compare = this->first.at(src + nb_take - 1);
     int left    = 0;
-    int right   = (int)m.size() / nb_take;
+    int right   = (int)m.size();
+    int mid     = 0;
 
     while (left < right)
     {
-        int mid = (left + right) / 2;
-        if (m.at((mid + 1) * nb_take - 1) > compare)
+        mid = (left + right) / 2;
+        if (m.at(mid) + (nb_take - 1) < (int)this->first.size() && this->first.at(m.at(mid) + (nb_take - 1)) > compare)
+        {
+            std::cout << "src=" << this->first.at(m.at(mid) + (nb_take - 1)) << " compare=" << compare 
+                    << " insert_at=" << left << std::endl;
             right = mid;
+        }
         else
+        {
+            std::cout << "HERE src=" << this->first.at(m.at(mid) + (nb_take - 1)) << " compare=" << compare 
+                    << " insert_at=" << left << std::endl;
             left = mid + 1;
+        }
     }
-    m.insert(m.begin() + left * nb_take, block.begin(), block.end());
+    if (left == (int)m.size())
+        return ;
+
+    // int dst = m.at(left);
+    // if (src < dst)
+    // {
+    //     m.insert(m.begin() + left, src);
+    //     return ;
+    // }
+    // blockRotate(nb_take, dst, src);
+    // updateMP(m, p, dst, src, nb_take);
+    // m.insert(m.begin() + left, dst);
+    int dst = m.at(left);
+    if (src == dst)  // seul cas vraiment "déjà en place"
+    {
+        m.insert(m.begin() + left, src);
+        return ;
+    }
+    if (src > dst)  // bloc move vers la gauche
+    {
+        blockRotate(nb_take, dst, src);
+        // indices dans [dst, src) décalent de +nb_take
+        for (int i = 0; i < (int)m.size(); i++)
+            if (m.at(i) >= dst && m.at(i) < src)
+                m.at(i) += nb_take;
+        for (int i = 0; i < (int)p.size(); i++)
+            if (p.at(i) >= dst && p.at(i) < src)
+                p.at(i) += nb_take;
+        m.insert(m.begin() + left, dst);
+    }
+    else  // src < dst : bloc move vers la droite
+    {
+        blockRotate(nb_take, dst, src);
+        // indices dans [src+nb_take, dst) décalent de -nb_take
+        for (int i = 0; i < (int)m.size(); i++)
+            if (m.at(i) >= src + nb_take && m.at(i) < dst)
+                m.at(i) -= nb_take;
+        for (int i = 0; i < (int)p.size(); i++)
+            if (p.at(i) >= src + nb_take && p.at(i) < dst)
+                p.at(i) -= nb_take;
+        m.insert(m.begin() + left, dst - nb_take);
+    }
 }
 
 void PmergeMe::binarySearch(int &level,
     std::vector<int> &m, std::vector<int> &p, std::vector<int> &ij)
 {
-    int nb_take = (level == 0) ? 1 : (1 << level);
+    int nb_take;
 
-    for (std::vector<int>::iterator itj = ij.begin(); itj != ij.end(); itj++)
+    if (level == 0)
+        nb_take = 1; 
+    else
+        nb_take = (1 << level);
+    std::cout << " | level " << level << " | " << std::endl;
+    for (std::vector<int>::iterator itj = ij.begin();
+        itj != ij.end(); itj++)
     {
-        int block_start = (*itj - 1) * nb_take;
-        std::vector<int> block(p.begin() + block_start,
-                               p.begin() + block_start + nb_take);
-        binaryInsert(block, m, nb_take);
+        binaryInsert(*itj, m, p, nb_take);
+        std::cout << " | acutal vec | ";
+        printIt(this->first);
     }
 }
 
-// void PmergeMe::calculMPO(int &level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &o)
-// {
-//     size_t i = 0;
-//     int pos = 1;
-//     int nb_take = 0;
-
-//     if (level == 0)
-//         nb_take = 1; 
-//     else
-//         nb_take = (1 << level);
-//     while (i < this->first.size())
-//     {
-//         if (level > 0 && (i + 1) % (1 << level) == 0)
-//         {
-//             if (pos % 2 != 0)
-//                 p.push_back(i - (nb_take - 1));
-//             else 
-//                 m.push_back(i - (nb_take - 1));
-//             pos++;
-//         }
-//         else if ((int)(this->first.size() / nb_take) * nb_take <= (int)i && level > 0)
-//         {
-//             if (m.size() == 0)
-//                 m.push_back(i);
-//         }
-//         else if (level == 0)
-//         {
-//             if (i == 0 || i % 2 == 0)
-//                 p.push_back(i);
-//             else 
-//                 m.push_back(i);
-//         }
-//         i++;
-//     }
-// }
-
-void PmergeMe::calculMPO(int &level, std::vector<int> &m,
-    std::vector<int> &p, std::vector<int> &o)
+void PmergeMe::calculMPO(int &level, std::vector<int> &m, std::vector<int> &p)
 {
-    (void)m;
-    (void)p;
-    (void)o;
-    int i = 0;
-    int nb_take = 1;
-    std::vector<int>::iterator ite = this->first.end();
-    
-    if (level != 0)
-        nb_take = (1 << level);
-    std::cout << "level= " << level << std::endl;
-    for (std::vector<int>::iterator it = this->first.begin();
-        it != ite; it++)
-    {
-        if (level != 0)
-        {
-            if (i == 0 || i % nb_take == 0)
-            {
-                if (i == 0 || i % 2 == 0)
-                {
-                    p.insert(p.end(), it, it + nb_take - 1);
-                    i += nb_take - 1;
-                }
-                else if (i + nb_take - 1 > (int)this->first.size())
-                {    
-                    o.insert(o.end(), it, it + ((i + nb_take - 1) - (int)this->first.size()));
-                    i += nb_take - 1;
-                }
-                else
-                {
-                    m.insert(m.end(), it, it + nb_take - 1);
-                    i += nb_take - 1;
-                }
-                std::cout << *it << std::endl;
+    size_t i = 0;
+    int pos = 1;
+    int nb_take = 0;
 
-            }
+    if (level == 0)
+        nb_take = 1; 
+    else
+        nb_take = (1 << level);
+    while (i < this->first.size())
+    {
+        if (level > 0 && (i + 1) % (1 << level) == 0)
+        {
+            if (pos % 2 != 0)
+                p.push_back(i - (nb_take - 1));
+            else 
+                m.push_back(i - (nb_take - 1));
+            pos++;
+        }
+        else if ((int)(this->first.size() / nb_take) * nb_take <= (int)i && level > 0)
+        {
+            if (m.size() == 0)
+                m.push_back(i);
+        }
+        else if (level == 0)
+        {
+            if (i == 0 || i % 2 == 0)
+                p.push_back(i);
+            else 
+                m.push_back(i);
+        }
+        i++;
+    }
+    std::cout << "main list = ";
+    for (std::vector<int>::iterator it = m.begin(); it != m.end(); it++)
+    {
+        i = 0;
+        while ((int)i < nb_take)
+        {
+            std::cout << this->first.at(*it + i) << " ";
+            if (i + 1 %nb_take == 0)
+                std::cout << " | ";
+            i++;
         }
     }
-    printIt(p);
+    std::cout << std::endl;
 }
 
+/**
+ * @brief The reverseMerge take a sort paired vector : 
+ * like that | 2 15   3 45 | 89
+ * and based on the level, we perform a binary search + an insert algorithm
+ * with the jacobsthal suit and we calcul the jacobsthal index.
+ * so here we can't sort Level 1: | 2 15    3 45 | 89
+ * so here we can't sort Level 0: | 2 15 |  3 45 | 89
+ * so here we can sort          : | 2 | 15 | 3 | 45 | 89
+ * the elements that stay in the vector are : 15 and 45
+ * and the elements that will be sort are : 2, 3 and 89
+ */
 void PmergeMe::reverseMerge(int &level, std::vector<int> &m,
-    std::vector<int> &p, std::vector<int> &ij, const int *j_suit, std::vector<int> &o)
+    std::vector<int> &p, std::vector<int> &ij, const int *j_suit)
 {
     int j = 0;
     int clast_insert = 0;
@@ -376,7 +450,9 @@ void PmergeMe::reverseMerge(int &level, std::vector<int> &m,
     int psize = 0;
     int i;
     
-    calculMPO(level, m, p, o);
+    // std::cout << "print be4 = ";
+    // printIt(this->first);
+    calculMPO(level, m, p);
     // calcul the jacobsthal index
     psize = (int)p.size();
     i = psize;
@@ -397,45 +473,21 @@ void PmergeMe::reverseMerge(int &level, std::vector<int> &m,
         }
         j++;
     }
-    // debug print
-    // int nb_take = 0;
-    // if (level == 0)
-    //     nb_take = 1; 
-    // else
-    //     nb_take = (1 << level);
-    // std::cout << "level " << level << " | " << std::endl;
-    // std::cout << "main list = ";
-    // for (std::vector<int>::iterator it = m.begin(); it != m.end(); it++)
-    // {
-    //     i = 0;
-    //     while ((int)i < nb_take)
-    //     {
-    //         std::cout << this->first.at(*it + i) << " ";
-    //         i++;
-    //     }
-    // }
-    // std::cout << std::endl << "pend list = ";
-    // for (std::vector<int>::iterator it = p.begin(); it != p.end(); it++)
-    // {
-    //     i = 0;
-    //     while ((int)i < nb_take)
-    //     {
-    //         std::cout << this->first.at(*it + i) << " ";
-    //         i++;
-    //     }
-    // }
-    // std::cout << std::endl << "acutal pends | ";
-    // printIt(p);
-    // std::cout << "acutal ij | ";
-    // printIt(ij);
-    // std::cout << "acutal vec | ";
-    // printIt(this->first);
-    // std::cout << std::endl;
     binarySearch(level, m, p, ij);
 }
 
+/**
+ * @brief This function sort the pairs of numbers in blocks based on the level
+ * for this exemple : level = 0 | array = 45 3 15 2 89
+ * we create a block of 2 pairs (because 2^(level:0)+1 = 2)
+ * so these is the blocks : | 45 3 | 15 2 | 89
+ * then we sort them      : | 3 45 | 2 15 | 89
+ * level 1                : | 3 45   2 15 | 89
+ * level 1                : | 2 15   3 45 | 89
+ * When we can't create more blocks we stop the recursion
+ */
 int PmergeMe::recursiveMerge(int level, std::vector<int> &m,
-    std::vector<int> &p, std::vector<int> &ij, const int *j_suit, std::vector<int> &o)
+    std::vector<int> &p, std::vector<int> &ij, const int *j_suit)
 {
     int tmp1 = 0;
     int tmp2 = 0;
@@ -480,15 +532,12 @@ int PmergeMe::recursiveMerge(int level, std::vector<int> &m,
     printIt(this->first);
     if ((level == 0 && this->first.size() > 2)
         || (double)(this->first.size()) / 2 >= (double)(2 << level))
-        recursiveMerge(level + 1, m, p, ij, j_suit, o);
+        recursiveMerge(level + 1, m, p, ij, j_suit);
     m.clear();
     p.clear();
     ij.clear();
-    o.clear();
     std::cout << std::endl;
-    reverseMerge(level, m, p, ij, j_suit, o);
-    this->first = m;
-    this->first.insert(this->first.end(), o.begin(), o.end());
+    reverseMerge(level, m, p, ij, j_suit);
     return (level);
 }
 
@@ -501,7 +550,6 @@ void PmergeMe::merge()
     std::vector<int> m;
     std::vector<int> p;
     std::vector<int> ij;
-    std::vector<int> o;
 
     std::deque<int> m2;
     std::deque<int> p2;
@@ -523,7 +571,7 @@ void PmergeMe::merge()
     // printIt(this->snd);
 
     start = clock();
-    recursiveMerge(0, m, p, ij, j_suit, o);
+    recursiveMerge(0, m, p, ij, j_suit);
     end = clock();
     duration = (double)(end - start) * 1000000 / CLOCKS_PER_SEC;
 

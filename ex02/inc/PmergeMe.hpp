@@ -37,15 +37,22 @@ class PmergeMe {
         void    blockRotate(int &nb_take, const int &dst, const int &src);
         void    updateMP(std::vector<int> &m, std::vector<int> &p,
                     const int &dst, int &src, int &nb_take);
-        void    binaryInsert(int &pos, std::vector<int> &m,
-                    std::vector<int> &p, int &nb_take);
+        // void    binaryInsert(int &pos, std::vector<int> &m,
+        //             std::vector<int> &p, int &nb_take);
+        void    binaryInsert(std::vector<int> &block,
+                    std::vector<int> &m, int &nb_take);
         void    binarySearch(int &level,
                     std::vector<int> &m, std::vector<int> &p, std::vector<int> &ij);
-        void    calculMPO(int &level, std::vector<int> &m, std::vector<int> &p);
+        // void    calculMPO(int &level, std::vector<int> &m, std::vector<int> &p);
+        // void    reverseMerge(int &level, std::vector<int> &m,
+        //             std::vector<int> &p, std::vector<int> &ij, const int *j_suit);
+        // int     recursiveMerge(int level, std::vector<int> &m,
+        //             std::vector<int> &p, std::vector<int> &ij, const int *j_suit);
+        void    calculMPO(int &level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &o);
         void    reverseMerge(int &level, std::vector<int> &m,
-                    std::vector<int> &p, std::vector<int> &ij, const int *j_suit);
+                    std::vector<int> &p, std::vector<int> &ij, const int *j_suit, std::vector<int> &o);
         int     recursiveMerge(int level, std::vector<int> &m,
-                    std::vector<int> &p, std::vector<int> &ij, const int *j_suit);
+                    std::vector<int> &p, std::vector<int> &ij, const int *j_suit, std::vector<int> &o);
 
 
         void    merge();
