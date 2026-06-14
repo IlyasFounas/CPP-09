@@ -288,83 +288,49 @@ void PmergeMe::binarySearch(int &level,
     }
 }
 
-// void PmergeMe::calculMPO(int &level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &o)
-// {
-//     size_t i = 0;
-//     int pos = 1;
-//     int nb_take = 0;
-
-//     if (level == 0)
-//         nb_take = 1; 
-//     else
-//         nb_take = (1 << level);
-//     while (i < this->first.size())
-//     {
-//         if (level > 0 && (i + 1) % (1 << level) == 0)
-//         {
-//             if (pos % 2 != 0)
-//                 p.push_back(i - (nb_take - 1));
-//             else 
-//                 m.push_back(i - (nb_take - 1));
-//             pos++;
-//         }
-//         else if ((int)(this->first.size() / nb_take) * nb_take <= (int)i && level > 0)
-//         {
-//             if (m.size() == 0)
-//                 m.push_back(i);
-//         }
-//         else if (level == 0)
-//         {
-//             if (i == 0 || i % 2 == 0)
-//                 p.push_back(i);
-//             else 
-//                 m.push_back(i);
-//         }
-//         i++;
-//     }
-// }
-
 void PmergeMe::calculMPO(int &level, std::vector<int> &m,
     std::vector<int> &p, std::vector<int> &o)
 {
-    (void)m;
-    (void)p;
-    (void)o;
     int i = 0;
+    int pos = 0;
     int nb_take = 1;
     std::vector<int>::iterator ite = this->first.end();
     
     if (level != 0)
         nb_take = (1 << level);
-    std::cout << "level= " << level << std::endl;
+    std::cout << "LEVEL= " << level << std::endl;
     for (std::vector<int>::iterator it = this->first.begin();
         it != ite; it++)
     {
         if (level != 0)
         {
-            if (i == 0 || i % nb_take == 0)
-            {
-                if (i == 0 || i % 2 == 0)
-                {
-                    p.insert(p.end(), it, it + nb_take - 1);
-                    i += nb_take - 1;
-                }
-                else if (i + nb_take - 1 > (int)this->first.size())
-                {    
-                    o.insert(o.end(), it, it + ((i + nb_take - 1) - (int)this->first.size()));
-                    i += nb_take - 1;
-                }
-                else
-                {
-                    m.insert(m.end(), it, it + nb_take - 1);
-                    i += nb_take - 1;
-                }
-                std::cout << *it << std::endl;
-
+            if (i + nb_take - 1 >= (int)this->first.size())
+            {    
+                o.insert(o.end(), it, this->first.end());
+                i += (int)this->first.size() - i;
+                return ;
             }
+            else if (i == 0 || i % nb_take == 0)
+            {
+                if (i == 0 || pos % 2 == 0)
+                    p.insert(p.end(), it, it + (nb_take));
+                else
+                    m.insert(m.end(), it, it + (nb_take));
+                pos++;
+                i += nb_take - 1;
+                it = this->first.begin() + i;
+            }
+            i++;
+        }
+        else if (level == 0)
+        {
+            if (i == 0 || i % 2 == 0)
+                p.push_back(*it);
+            else
+                m.push_back(*it);
+            i++;
         }
     }
-    printIt(p);
 }
 
 void PmergeMe::reverseMerge(int &level, std::vector<int> &m,
@@ -378,7 +344,7 @@ void PmergeMe::reverseMerge(int &level, std::vector<int> &m,
     
     calculMPO(level, m, p, o);
     // calcul the jacobsthal index
-    psize = (int)p.size();
+    psize = (int)p.size() / (1 << level);
     i = psize;
     while ((int)ij.size() != psize)
     {
@@ -397,41 +363,17 @@ void PmergeMe::reverseMerge(int &level, std::vector<int> &m,
         }
         j++;
     }
-    // debug print
-    // int nb_take = 0;
-    // if (level == 0)
-    //     nb_take = 1; 
-    // else
-    //     nb_take = (1 << level);
-    // std::cout << "level " << level << " | " << std::endl;
-    // std::cout << "main list = ";
-    // for (std::vector<int>::iterator it = m.begin(); it != m.end(); it++)
-    // {
-    //     i = 0;
-    //     while ((int)i < nb_take)
-    //     {
-    //         std::cout << this->first.at(*it + i) << " ";
-    //         i++;
-    //     }
-    // }
-    // std::cout << std::endl << "pend list = ";
-    // for (std::vector<int>::iterator it = p.begin(); it != p.end(); it++)
-    // {
-    //     i = 0;
-    //     while ((int)i < nb_take)
-    //     {
-    //         std::cout << this->first.at(*it + i) << " ";
-    //         i++;
-    //     }
-    // }
-    // std::cout << std::endl << "acutal pends | ";
-    // printIt(p);
-    // std::cout << "acutal ij | ";
-    // printIt(ij);
-    // std::cout << "acutal vec | ";
-    // printIt(this->first);
-    // std::cout << std::endl;
+    std::cout << "la pend = ";
+    printIt(p);
+    std::cout << "la main = ";
+    printIt(m);
+    std::cout << "les odds = ";
+    printIt(o);
+    std::cout << "ij = ";
+    printIt(ij);
     binarySearch(level, m, p, ij);
+    std::cout << "vec = ";
+    printIt(first);
 }
 
 int PmergeMe::recursiveMerge(int level, std::vector<int> &m,
@@ -539,6 +481,7 @@ void PmergeMe::merge()
     << this->first.size() << " elements with PmergeMe: " << duration / 1000 << " ms" << std::endl;
     std::cout << "(Deque) Time to process a range of " 
     << this->snd.size() << " elements with PmergeMe: " << duration2 / 1000 << " ms" << std::endl;
+    std::cout << "is sorted ? let's see it = " << is_sorted(this->first) << std::endl;
 }
 
 void PmergeMe::printIt(std::vector<int> &print_vec)
