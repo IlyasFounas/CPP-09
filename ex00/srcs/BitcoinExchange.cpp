@@ -4,10 +4,10 @@
 #include <cmath>
 
 BitcoinExchange::BitcoinExchange() : _file_name("NULL"), year(0), month(0),
-    day(0), year_csv(0), month_csv(0), day_csv(0) {}
+    day(0)/* , year_csv(0), month_csv(0), day_csv(0) */ {}
 
 BitcoinExchange::BitcoinExchange(const std::string &file_name) : _file_name(file_name), year(0), month(0),
-    day(0), year_csv(0), month_csv(0), day_csv(0) {}
+    day(0)/* , year_csv(0), month_csv(0), day_csv(0) */ {}
 
 BitcoinExchange::BitcoinExchange(const BitcoinExchange &cpy)
 {
@@ -49,7 +49,7 @@ void BitcoinExchange::parseDataFile()
     std::string s1;
     std::string s2;
 
-    read_file.open("data/test.csv", std::ios::app);
+    read_file.open("data.csv", std::ios::app);
     while (std::getline(read_file, line))
     {
 
@@ -70,7 +70,7 @@ void BitcoinExchange::parseDataFile()
                 throw BadInputException();
         }
         else
-        {   if (s2.size() == 0)
+        {   if (s2.size() == 0 || s1.size() != 10)
                 throw BadInputException();
             for (size_t i = 0; i < s2.size(); i++)
             {
@@ -81,7 +81,8 @@ void BitcoinExchange::parseDataFile()
                 }
             }
         }
-        insertDataValue(s1, s2);
+        if (i != 0 && !insertDataValue(s1, s2))
+            throw BadInputException();
         i++;
     }
 }
@@ -104,8 +105,8 @@ void BitcoinExchange::parseInputFile()
         pos = line.find(" | ");
         if (pos == std::string::npos)
         {
-            insertDataValue(line, "NULL");
-            std::cout << "Error: bad input => " << line << std::endl;
+            if (i != 0)
+                std::cout << "Error: bad input => " << line << std::endl;
             continue ;
         }
         else
@@ -137,9 +138,25 @@ void BitcoinExchange::parseInputFile()
     }
 }
 
-void BitcoinExchange::insertDataValue(const std::string &s1, const std::string &s2)
+bool BitcoinExchange::insertDataValue(const std::string &s1, const std::string &s2)
 {
-    _internal_db.insert(std::make_pair(s1, s2));
+    long int date = 0;
+    long int c_year = 0;
+    long int c_month = 0;
+    long int c_day = 0;
+    size_t pos = s1.find("-");
+    size_t last_pos = s1.find("-", pos + 1);
+    std::string error_message;
+    int err;
+
+    c_year = std::atol(s1.substr(0, pos).c_str());
+    c_month = std::atol(s1.substr(pos + 1, last_pos - (pos + 1)).c_str());
+    c_day = std::atol(s1.substr(last_pos + 1).c_str());
+    if (!checkRequirements(c_year, c_month, c_day, error_message, err))
+        return false;
+    date = (c_year * 10000) + (c_month * 100) + c_day;
+    _internal_db.insert(std::make_pair(date, s2));
+    return true;
 }
 
 bool BitcoinExchange::checkRequirements(long int year, long int month, long int day, std::string &error_message, int &err)
@@ -174,41 +191,22 @@ bool BitcoinExchange::checkRequirements(long int year, long int month, long int 
     return (true);
 }
 
-long int BitcoinExchange::extractDateValue(const std::string &date, int &err, std::string &error_message, bool csv)
+long int BitcoinExchange::extractDateValue(const std::string &date, int &err, std::string &error_message)
 {
     size_t pos = date.find("-");
     size_t last_pos = date.find("-", pos + 1);
 
-    if (pos == std::string::npos || last_pos == std::string::npos)
+    if (pos == std::string::npos || last_pos == std::string::npos || date.size() != 10)
     {
         error_message = "Error: invalid date format (expected yyyy-mm-dd)";
         err = 1;
         return (-1);
     }
-    if (csv)
-    {
-        this->year_csv = ft_atoi(date.substr(0, pos), err, error_message);
-        if (err == 1)
-            return (-1);
-        this->month_csv = ft_atoi(date.substr(pos + 1, last_pos - (pos + 1)), err, error_message);
-        if (err == 1)
-            return (-1);
-        this->day_csv = ft_atoi(date.substr(last_pos + 1), err, error_message);
-        if (err == 1)
-            return (-1);
-    }
-    else
-    {
-        this->year = ft_atoi(date.substr(0, pos), err, error_message);
-        if (err == 1)
-            return (-1);
-        this->month = ft_atoi(date.substr(pos + 1, last_pos - (pos + 1)), err, error_message);
-        if (err == 1)
-            return (-1);
-        this->day = ft_atoi(date.substr(last_pos + 1), err, error_message);
-        if (err == 1)
-            return (-1);
-    }
+    this->year = std::atol(date.substr(0, pos).c_str());
+    this->month = std::atol(date.substr(pos + 1, last_pos - (pos + 1)).c_str());
+    this->day = std::atol(date.substr(last_pos + 1).c_str());
+    if (!checkRequirements(this->year, this->month, this->day, error_message, err))
+        return -1;
     return (0);
 }
 
@@ -219,46 +217,27 @@ long int BitcoinExchange::extractDateValue(const std::string &date, int &err, st
  */
 long double BitcoinExchange::returnDataValue(const std::string &input_date, int &err, std::string &error_message)
 {
-    std::string closest_date;
-    
-    if (extractDateValue(input_date, err, error_message, false) == -1)
-        return -1;
-    if (!checkRequirements(this->year, this->month, this->day, error_message, err))
-        return -1;
-    // find the exect date in the database
-    if (this->_internal_db.size() <= 0)
-        return (0);
-    std::map<std::string, std::string>::iterator it = this->_internal_db.lower_bound(input_date);
-    if (it == this->_internal_db.end())
-    {
-        closest_date = this->_internal_db.rbegin()->first;
-    } 
-    else if (it == this->_internal_db.begin())
-    {
-        closest_date = it->first;
-    }
-    else
-    {
-        std::map<std::string, std::string>::iterator prev_it = it;
-        prev_it--;
-        long input_num = std::atol(input_date.substr(0, 4).c_str()) * 10000 +
-                        std::atol(input_date.substr(5, 2).c_str()) * 100 +
-                        std::atol(input_date.substr(8, 2).c_str());
+    long int date;
 
-        long next_num = std::atol(it->first.substr(0, 4).c_str()) * 10000 +
-                       std::atol(it->first.substr(5, 2).c_str()) * 100 +
-                       std::atol(it->first.substr(8, 2).c_str());
-
-        long prev_num = std::atol(prev_it->first.substr(0, 4).c_str()) * 10000 +
-                       std::atol(prev_it->first.substr(5, 2).c_str()) * 100 +
-                       std::atol(prev_it->first.substr(8, 2).c_str());
-        if (std::abs(next_num - input_num) < std::abs(input_num - prev_num))
-            closest_date = it->first;
-        else
-            closest_date = prev_it->first;
+    if (extractDateValue(input_date, err, error_message) == -1)
+        return -1;
+    if (this->_internal_db.empty())
+    {
+        error_message = "Error: database is empty";
+        err = 1;
+        return -1;
     }
-    // return the good value
-    return std::strtold(this->_internal_db[closest_date].c_str(), NULL);
+    date = (this->year * 10000) + (this->month * 100) + this->day;
+    std::map<long int, std::string>::iterator it = this->_internal_db.lower_bound(date);
+    if (it != this->_internal_db.end() && it->first == date)
+        return std::strtold(it->second.c_str(), NULL);
+    if (it != this->_internal_db.begin()) {
+        --it;
+        return std::strtold(it->second.c_str(), NULL);
+    }
+    error_message = "Error: no available data at this date";
+    err = 1;
+    return -1;
 }
 
 

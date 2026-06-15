@@ -14,13 +14,13 @@
 class BitcoinExchange {
     private:
         std::string _file_name;
-        std::map<std::string, std::string> _internal_db;
+        std::map<long int, std::string> _internal_db;
         long int year;
         long int month;
         long int day;
-        long int year_csv;
-        long int month_csv;
-        long int day_csv;
+        // long int year_csv;
+        // long int month_csv;
+        // long int day_csv;
 
     public:
         BitcoinExchange();
@@ -38,10 +38,10 @@ class BitcoinExchange {
         // member functions
         void        parseDataFile();
         void        parseInputFile();
-        void        insertDataValue(const std::string &s1, const std::string &s2);
+        bool        insertDataValue(const std::string &s1, const std::string &s2);
         bool        checkRequirements(long int year, long int month, long int day,
             std::string &error_message, int &err);
-        long int    extractDateValue(const std::string &date, int &err, std::string &error_message, bool csv);
+        long int    extractDateValue(const std::string &date, int &err, std::string &error_message);
         long double    returnDataValue(const std::string &input_date, int &err,
             std::string &error_message);
         long double calculTheExchange(const std::string &s1, const std::string &s2,
