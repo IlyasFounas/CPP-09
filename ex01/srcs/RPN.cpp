@@ -82,7 +82,7 @@ bool RPN::calcul()
 
     if (this->_exp.empty() || !expressionCheck(error_message))
     {
-        std::cout << error_message << std::endl;
+        std::cerr << error_message << std::endl;
         return false;
     }
     for (size_t i = 0; this->_exp[i]; i++)
@@ -91,7 +91,7 @@ bool RPN::calcul()
         {
             if (this->i_stack.size() < 2)
             {
-                std::cout << "Error: not enough digit to do the operation" << std::endl;
+                std::cerr << "Error: not enough digit to do the operation" << std::endl;
                 return false;
             }
             // calcul
@@ -109,14 +109,14 @@ bool RPN::calcul()
             {
                 if (nb2 == 0)
                 {
-                    std::cout << "Error: divide by 0 is not possible" << std::endl;
+                    std::cerr << "Error: divide by 0 is not possible" << std::endl;
                     return false;
                 }
                 res = nb1 / nb2;
             }
             if (res > 2147483647 || res < -2147483649)
             {
-                std::cout << "Error: overflow occured" << std::endl;
+                std::cerr << "Error: overflow occured" << std::endl;
                 return false;
             }
             this->i_stack.push(res);
@@ -128,7 +128,7 @@ bool RPN::calcul()
         setResult(this->i_stack.top());
     else if (this->i_stack.size() > 1)
     {
-        std::cout << "Error: wrong input" << std::endl;
+        std::cerr << "Error: wrong input" << std::endl;
         return false;
     }
     return true;
