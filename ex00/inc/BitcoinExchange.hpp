@@ -18,9 +18,6 @@ class BitcoinExchange {
         long int year;
         long int month;
         long int day;
-        // long int year_csv;
-        // long int month_csv;
-        // long int day_csv;
 
     public:
         BitcoinExchange();

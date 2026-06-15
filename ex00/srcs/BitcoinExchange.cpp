@@ -4,10 +4,10 @@
 #include <cmath>
 
 BitcoinExchange::BitcoinExchange() : _file_name("NULL"), year(0), month(0),
-    day(0)/* , year_csv(0), month_csv(0), day_csv(0) */ {}
+    day(0) {}
 
 BitcoinExchange::BitcoinExchange(const std::string &file_name) : _file_name(file_name), year(0), month(0),
-    day(0)/* , year_csv(0), month_csv(0), day_csv(0) */ {}
+    day(0) {}
 
 BitcoinExchange::BitcoinExchange(const BitcoinExchange &cpy)
 {
@@ -113,6 +113,11 @@ void BitcoinExchange::parseInputFile()
         {
             s1 = line.substr(0, pos);
             s2 = line.substr(pos + 3);
+            if (s2.size() == 0)
+            {
+                std::cout << "Error: bad input => " << line << std::endl;
+                continue ;
+            }
         }
         if (i == 0)
         {
