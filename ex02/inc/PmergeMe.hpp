@@ -48,13 +48,15 @@ class PmergeMe {
         void    insert(char **argv, int &error);
 } ;
 
-template<typename T>
-bool is_sorted(const std::vector<T>& vec) {
-    return std::adjacent_find(vec.begin(), vec.end(), std::greater<T>()) == vec.end();
-}
-template<typename T>
-bool is_sorted_d(const std::deque<T>& vec) {
-    return std::adjacent_find(vec.begin(), vec.end(), std::greater<T>()) == vec.end();
-}
+
+
+// template<typename T>
+// bool is_sorted(const std::vector<T>& vec) {
+//     return std::adjacent_find(vec.begin(), vec.end(), std::greater<T>()) == vec.end();
+// }
+// template<typename T>
+// bool is_sorted_d(const std::deque<T>& vec) {
+//     return std::adjacent_find(vec.begin(), vec.end(), std::greater<T>()) == vec.end();
+// }
 
 #endif
