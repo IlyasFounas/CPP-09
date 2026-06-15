@@ -19,35 +19,22 @@ class PmergeMe {
 
         // deque member functions
         void    d_blockSwap(int &pos1, int &pos2, int &level);
-        void    d_blockRotate(int &nb_take, const int &dst, const int &src);
-        void    d_updateMP(std::deque<int> &m, std::deque<int> &p,
-                    const int &dst, int &src, int &nb_take);
-        void    d_binaryInsert(int &pos, std::deque<int> &m,
-                    std::deque<int> &p, int &nb_take);
+        void    d_binaryInsert(std::deque<int> &block,
+                    std::deque<int> &m, int &nb_take);
         void    d_binarySearch(int &level,
                     std::deque<int> &m, std::deque<int> &p, std::deque<int> &ij);
-        void    d_calculMPO(int &level, std::deque<int> &m, std::deque<int> &p);
+        void    d_calculMPO(int &level, std::deque<int> &m, std::deque<int> &p, std::deque<int> &o);
         void    d_reverseMerge(int &level, std::deque<int> &m,
-                    std::deque<int> &p, std::deque<int> &ij, const int *j_suit);
+                    std::deque<int> &p, std::deque<int> &ij, const int *j_suit, std::deque<int> &o);
         int     d_recursiveMerge(int level, std::deque<int> &m,
-                    std::deque<int> &p, std::deque<int> &ij, const int *j_suit);
+                    std::deque<int> &p, std::deque<int> &ij, const int *j_suit, std::deque<int> &o);
         
         // vector member functions
         void    blockSwap(int &pos1, int &pos2, int &level);
-        void    blockRotate(int &nb_take, const int &dst, const int &src);
-        void    updateMP(std::vector<int> &m, std::vector<int> &p,
-                    const int &dst, int &src, int &nb_take);
-        // void    binaryInsert(int &pos, std::vector<int> &m,
-        //             std::vector<int> &p, int &nb_take);
         void    binaryInsert(std::vector<int> &block,
                     std::vector<int> &m, int &nb_take);
         void    binarySearch(int &level,
                     std::vector<int> &m, std::vector<int> &p, std::vector<int> &ij);
-        // void    calculMPO(int &level, std::vector<int> &m, std::vector<int> &p);
-        // void    reverseMerge(int &level, std::vector<int> &m,
-        //             std::vector<int> &p, std::vector<int> &ij, const int *j_suit);
-        // int     recursiveMerge(int level, std::vector<int> &m,
-        //             std::vector<int> &p, std::vector<int> &ij, const int *j_suit);
         void    calculMPO(int &level, std::vector<int> &m, std::vector<int> &p, std::vector<int> &o);
         void    reverseMerge(int &level, std::vector<int> &m,
                     std::vector<int> &p, std::vector<int> &ij, const int *j_suit, std::vector<int> &o);
@@ -63,6 +50,10 @@ class PmergeMe {
 
 template<typename T>
 bool is_sorted(const std::vector<T>& vec) {
+    return std::adjacent_find(vec.begin(), vec.end(), std::greater<T>()) == vec.end();
+}
+template<typename T>
+bool is_sorted_d(const std::deque<T>& vec) {
     return std::adjacent_find(vec.begin(), vec.end(), std::greater<T>()) == vec.end();
 }
 
